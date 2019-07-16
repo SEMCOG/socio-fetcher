@@ -1,3 +1,7 @@
 /data
 
 todo.md
+
+# === Global Rules ===
+*.pyc
+__pycache__
