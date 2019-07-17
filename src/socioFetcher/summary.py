@@ -1,6 +1,6 @@
 # TODO: Generate summary table from result dataframe
 import pandas as pd
-from utils.config import *
+from socioFetcher.config import *
 
 
 def getBLSTotalTable(countyClassDict):

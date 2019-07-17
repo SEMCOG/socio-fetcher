@@ -5,3 +5,4 @@ todo.md
 # === Global Rules ===
 *.pyc
 __pycache__
+*.egg-info
