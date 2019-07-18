@@ -1,0 +1,87 @@
+import pytest
+import pickle
+from socioFetcher.geodataframe import GeoDataFrame
+import pandas as pd
+
+
+class TestGeoDataFrame:
+
+    @pytest.mark.parametrize('county, dataset',
+                             [('Livingston', 'BEA'),
+                              ('Macomb', 'bls'),
+                              ('Oakland', 'BEA-GDP')
+                              ])
+    def test_init(self, county, dataset):
+        geoDf = GeoDataFrame(county, dataset)
+        assert geoDf.county == county
+        assert geoDf.dataset == dataset
+        assert isinstance(geoDf.DataFrame, pd.DataFrame)
+        assert str(geoDf) == geoDf.county == county
+
+    @pytest.fixture()
+    def acs_data(self):
+        with open("test/unit/unittestdata/ACSdata.pickle", "rb") as f:
+            ACSdata = pickle.load(f)
+        return ACSdata
+
+    @pytest.fixture()
+    def acs_expected(self):
+        with open("test/unit/unittestdata/ACSdata_expected.pickle", "rb") as f:
+            ACSdata_expected = pickle.load(f)
+        return ACSdata_expected
+
+    def test_ACSParser(self, acs_data, acs_expected):
+        geoDf = GeoDataFrame('Livingston', 'ACS')
+        re = geoDf.ACSParser(acs_data, year="2010")
+        assert re.equals(acs_expected)
+
+    @pytest.fixture()
+    def bea_data(self):
+        with open("test/unit/unittestdata/BEAdata.pickle", "rb") as f:
+            BEAdata = pickle.load(f)
+        return BEAdata
+
+    @pytest.fixture()
+    def bea_expected(self):
+        with open("test/unit/unittestdata/BEAdata_expected.pickle", "rb") as f:
+            BEAdata_expected = pickle.load(f)
+        return BEAdata_expected
+
+    def test_BEAParser(self, bea_data, bea_expected):
+        geoDf = GeoDataFrame('Livingston', 'BEA')
+        re = geoDf.BEAParser(bea_data, gdp=False)
+        assert re.equals(bea_expected)
+
+    @pytest.fixture()
+    def bea_gdp_data(self):
+        with open("test/unit/unittestdata/BEAGDPdata.pickle", "rb") as f:
+            BEAGDPdata = pickle.load(f)
+        return BEAGDPdata
+
+    @pytest.fixture()
+    def bea_gdp_expected(self):
+        with open("test/unit/unittestdata/BEAGDPdata_expected.pickle", "rb") as f:
+            BEAGDPdata_expected = pickle.load(f)
+        return BEAGDPdata_expected
+
+    def test_BEAGDPParser(self, bea_gdp_data, bea_gdp_expected):
+        geoDf = GeoDataFrame('Livingston', 'BEA-GDP')
+        re = geoDf.BEAParser(bea_gdp_data, gdp=True)
+        assert re.equals(bea_gdp_expected)
+
+    @pytest.fixture()
+    def bls_data(self):
+        with open("test/unit/unittestdata/BLSdata.pickle", "rb") as f:
+            BLSdata = pickle.load(f)
+        return BLSdata
+
+    @pytest.fixture()
+    def bls_expected(self):
+        with open("test/unit/unittestdata/BLSdata_expected.pickle", "rb") as f:
+            BLSdata_expected = pickle.load(f)
+        return BLSdata_expected
+
+    def test_BLSParser(self, bls_data, bls_expected):
+        geoDf = GeoDataFrame('Livingston', 'BLS')
+        re = geoDf.BLSParser(bls_data)
+        assert re.equals(bls_expected)

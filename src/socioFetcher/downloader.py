@@ -1,3 +1,4 @@
+import os
 import requests
 import itertools
 import pandas as pd
@@ -76,6 +77,80 @@ class Downloader:
             for fips, geoDf in res.items():
                 self.data[fips][dataset] = geoDf
 
+    def export(self, path, summarize=False, by="geography"):
+        """
+            Save downloaded data to specified path
+
+        Parameters:
+            path:str    Abosolute path to a folder where files will be saved
+            (optional)
+            summarize:bolean    Save summarized data, default is False
+            by:str      Summarize option, one of geography and dataset
+
+        Returns: 
+            None
+        """
+        if not summarize:
+            for areaID, obj in self.data.items():
+                areaName = self.config["GLOBAL_AREA_CODE"][areaID]
+                for datasetName, geoDf in obj.items():
+                    savePath = os.path.join(path, areaName)
+                    os.makedirs(savePath, exist_ok=True)
+                    geoDf.DataFrame.to_csv(
+                        os.path.join(savePath, f"{datasetName}.csv")
+                    )
+        else:
+            summary = self.summarize(by=by)
+            if by.lower() == "geography":
+                for areaID, Df in summary.items():
+                    areaName = self.config["GLOBAL_AREA_CODE"][areaID]
+                    Df.to_csv(
+                        os.path.join(path, f"{areaName}.csv")
+                    )
+            elif by.lower() == "dataset":
+                for datasetName, Df in summary.items():
+                    Df.to_csv(
+                        os.path.join(path, f"{datasetName}.csv")
+                    )
+
+    def summarize(self, by="geography"):
+        """
+            Process downloaded data and produce summrized table by
+        either geography or dataset 
+
+        Parameters:
+            by:str  On which summarize will based on, must be one of 
+                    geography and dataset
+
+        Returns: 
+            tableDict:dict  
+                    key: Name of Geography or Name of dataset
+                    value: pandas.DataFrame
+        """
+        if by.lower() == "geography":
+            areaTableDict = {}
+            for areaID, obj in self.data.items():
+                areaTable = pd.DataFrame()
+                for datasetName, geoDf in obj.items():
+                    localTable = geoDf.DataFrame
+                    areaTable = pd.concat([areaTable, localTable],
+                                          axis=1, sort=True)
+                areaTableDict[areaID] = areaTable
+            return areaTableDict
+        elif by.lower() == "dataset":
+            datasetTableDict = {}
+            for datasetName in self.dataset:
+                datasetTable = pd.DataFrame()
+                for areaID, obj in self.data.items():
+                    areaName = self.config["GLOBAL_AREA_CODE"][areaID]
+                    localTable = obj[datasetName].DataFrame
+                    localTable = localTable.rename(lambda x: f"{areaName} {x}",
+                                                   axis="columns")
+                    datasetTable = pd.concat([datasetTable, localTable],
+                                             axis=1, sort=True)
+                datasetTableDict[datasetName] = datasetTable
+            return datasetTableDict
+
     def downloadBLS(self):
         """
             Download BLS data given configuration from constructor.
@@ -111,7 +186,7 @@ class Downloader:
                 data=data, headers=headers)
             while r.status_code != requests.codes.ok:
                 warnings.warn(
-                    f"Request server fail with error code ${str(p.status_code)}, sleep 10 sec",
+                    f"Request server fail with error code {str(p.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
                 r = requests.post(
@@ -208,7 +283,7 @@ class Downloader:
             print("Loading Data for " +
                   self.config["GLOBAL_AREA_CODE"][areaCode])
             GDPdata.load(json_data, source="BEA-GDP")
-        return GDPdata.countyData
+        return GDPdata.DataFrame
 
     def downloadACS(self):
         """
@@ -252,10 +327,10 @@ class Downloader:
                 r = requests.get(f"https://api.census.gov/data/{sbjPay[0]}/acs/acs5/subject",
                                  params=payload)
             json_data = r.json()
-            areaCode = sbjPay[1]
+            areaCode = sbjPay[2]+sbjPay[1]
             print("Loading Data for " +
                   self.config["GLOBAL_AREA_CODE"][areaCode])
-            geoClassDict[sbjPay[2]+sbjPay[1]].load(
+            geoClassDict[areaCode].load(
                 json_data, source="ACS", year=sbjPay[0])
 
         for detPay in detailPayload:
@@ -285,9 +360,9 @@ class Downloader:
                 json_data, source="ACS", year=detPay[0])
         # merge two dicts
         for key, _ in geoClassDict.items():
-            geoClassDict[key].countyData = pd.concat(
-                [geoClassDict[key].countyData,
-                 detGeoClassDict[key].countyData],
+            geoClassDict[key].DataFrame = pd.concat(
+                [geoClassDict[key].DataFrame,
+                 detGeoClassDict[key].DataFrame],
                 axis=1, sort=True)
 
         return geoClassDict
@@ -352,3 +427,9 @@ class Downloader:
             ACSPayloadDict["SUBJECT"].append(subjectList)
             ACSPayloadDict["DETAIL"].append(detailList)
         return ACSPayloadDict
+
+
+dl = Downloader(["BEA-GDP"], ["11460"])
+dl.download()
+dl.summarize(by="geography")
+dl.export("/Users/tianxie/Desktop/testFolder")

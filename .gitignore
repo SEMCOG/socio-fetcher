@@ -3,6 +3,8 @@
 todo.md
 
 # === Global Rules ===
+.vscode
+.cache
 *.pyc
 __pycache__
 *.egg-info

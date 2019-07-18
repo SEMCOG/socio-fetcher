@@ -9,13 +9,13 @@ class GeoDataFrame:
     Attributes: 
         county:str  The real part of complex number. 
         dataset:str  The imaginary part of complex number. 
-        countyDataFrame:pandas.DataFrame    
+        DataFrame:pandas.DataFrame    
                             DataFrame to store county data
     """
 
     def __init__(self, county, dataset="BLS"):
         """ 
-            The constructor for CountyDataFrame class. 
+            The constructor for GeoDataFrame class. 
 
         Parameters: 
            county:str   County Name 
@@ -25,16 +25,10 @@ class GeoDataFrame:
         self.county = county
         self.dataset = dataset
         #self.loadedBLSSeriesID = []
-        self.countyDataFrame = pd.DataFrame()
+        self.DataFrame = pd.DataFrame()
 
     def __str__(self):
         self.__repr__ = self.__str__
-        return self.county
-
-    def get_county_name(self):
-        """
-        Get the county name for this object 
-        """
         return self.county
 
     def load(self, data, source="BLS", year=None):
@@ -53,25 +47,25 @@ class GeoDataFrame:
         if source.upper() == "BLS" and self.dataset == "BLS":
             # self.loadedBLSSeriesID.append(data["seriesID"])
             parsedData = self.BLSParser(data)
-            self.countyDataFrame = pd.concat([self.countyDataFrame, parsedData],
-                                             axis=1, sort=True)
+            self.DataFrame = pd.concat([self.DataFrame, parsedData],
+                                       axis=1, sort=True)
         elif source.upper() == "BEA" and self.dataset == "BEA":
             parsedData = self.BEAParser(data["BEAAPI"]["Results"])
-            self.countyDataFrame = pd.concat([self.countyDataFrame, parsedData],
-                                             axis=1, sort=True)
+            self.DataFrame = pd.concat([self.DataFrame, parsedData],
+                                       axis=1, sort=True)
         elif source.upper() == "BEA-GDP" and self.dataset == "BEA-GDP":
             parsedData = self.BEAParser(data["BEAAPI"]["Results"], gdp=True)
-            if self.countyDataFrame.shape[0] == 0:
-                self.countyDataFrame = parsedData
+            if self.DataFrame.shape[0] == 0:
+                self.DataFrame = parsedData
             else:
-                self.countyDataFrame = self.countyDataFrame + parsedData
+                self.DataFrame = self.DataFrame + parsedData
         elif source.upper() == "ACS" and self.dataset == "ACS":
             parsedData = self.ACSParser(data, year=year)  # check parser
-            if self.countyDataFrame.shape[0] == 0:
-                self.countyDataFrame = parsedData
+            if self.DataFrame.shape[0] == 0:
+                self.DataFrame = parsedData
             else:
-                self.countyDataFrame = pd.concat([self.countyDataFrame, parsedData],
-                                                 axis=0, sort=True)
+                self.DataFrame = pd.concat([self.DataFrame, parsedData],
+                                           axis=0, sort=True)
 
     def BLSParser(self, data):
         """
@@ -101,12 +95,10 @@ class GeoDataFrame:
         Output: 
             pandas.Series
         """
-        if not gdp:
-            d = pd.DataFrame(columns=["avgIncome"], dtype="float64")
-        else:
-            d = pd.DataFrame(columns=["GDP"], dtype="float64")
+        colName = "avgIncome" if not gdp else "GDP"
+        d = pd.DataFrame(columns=[colName], dtype="float64")
         for dd in data["Data"]:
-            d.loc[dd["TimePeriod"], "GDP"] = float(
+            d.loc[dd["TimePeriod"], colName] = float(
                 dd["DataValue"].replace(",", ""))
         return d
 
