@@ -23,6 +23,8 @@ Todo
 
 Log
 --------------
+- 07/19 Add unit test for downloader, add func test for download,
+        fix bugs in BEA download
 - 07/18 Add summary and export feature to Downloader
     - Intergrate summary.py into Downloader
         - Sumerize by either geography or dataset

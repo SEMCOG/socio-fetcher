@@ -1,3 +1,4 @@
+
 import pandas as pd
 
 
@@ -20,7 +21,7 @@ class GeoDataFrame:
         Parameters: 
            county:str   County Name 
            dataset:str   dataset type, must be one of BLS, BEA, 
-                            BEA-GDP, or ACS 
+                            BEAGDP, or ACS 
         """
         self.county = county
         self.dataset = dataset
@@ -52,13 +53,14 @@ class GeoDataFrame:
         elif source.upper() == "BEA" and self.dataset == "BEA":
             parsedData = self.BEAParser(data["BEAAPI"]["Results"])
             self.DataFrame = pd.concat([self.DataFrame, parsedData],
-                                       axis=1)
-        elif source.upper() == "BEA-GDP" and self.dataset == "BEA-GDP":
+                                       axis=1, sort=True)
+        elif source.upper() == "BEAGDP" and self.dataset == "BEAGDP":
             parsedData = self.BEAParser(data["BEAAPI"]["Results"], gdp=True)
             if self.DataFrame.shape[0] == 0:
                 self.DataFrame = parsedData
             else:
-                self.DataFrame = self.DataFrame + parsedData
+                self.DataFrame = pd.concat([self.DataFrame, parsedData],
+                                           axis=1, sort=True)
         elif source.upper() == "ACS" and self.dataset == "ACS":
             parsedData = self.ACSParser(data, year=year)  # check parser
             if self.DataFrame.shape[0] == 0:
@@ -95,7 +97,7 @@ class GeoDataFrame:
         Output: 
             pandas.Series
         """
-        colName = "avgIncome" if not gdp else "GDP"
+        colName = f"{self.county}_avgIncome" if not gdp else f"{self.county}_GDP"
         d = pd.DataFrame(columns=[colName], dtype="float64")
         for dd in data["Data"]:
             d.loc[dd["TimePeriod"], colName] = float(

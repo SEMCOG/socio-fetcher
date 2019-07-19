@@ -8,7 +8,7 @@
 GLOBAL_OUTPUT_FOLDER = "data/output"
 GLOBAL_OUTPUT_PICKLE_FOLDER = "data/pickles"
 GLOBAL_OUTPUT_SUMMARY_FOLDER = "data/summary/"
-GLOBAL_ALLOWED_DATASET = ["BLS", "BEA", "BEA-GDP", "ACS"]
+GLOBAL_ALLOWED_DATASET = ["BLS", "BEA", "BEAGDP", "ACS"]
 GLOBAL_AREA_CODE = {"26093": "Livingston,MI",
                     "26099": "Macomb,MI",
                     "26115": "Monroe,MI",

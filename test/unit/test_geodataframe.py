@@ -7,9 +7,9 @@ import pandas as pd
 class TestGeoDataFrame:
 
     @pytest.mark.parametrize('county, dataset',
-                             [('Livingston', 'BEA'),
-                              ('Macomb', 'bls'),
-                              ('Oakland', 'BEA-GDP')
+                             [('Livingston,MI', 'BEA'),
+                              ('Macomb,MI', 'bls'),
+                              ('Oakland,MI', 'BEAGDP')
                               ])
     def test_init(self, county, dataset):
         geoDf = GeoDataFrame(county, dataset)
@@ -31,7 +31,7 @@ class TestGeoDataFrame:
         return ACSdata_expected
 
     def test_ACSParser(self, acs_data, acs_expected):
-        geoDf = GeoDataFrame('Livingston', 'ACS')
+        geoDf = GeoDataFrame('Livingston,MI', 'ACS')
         re = geoDf.ACSParser(acs_data, year="2010")
         assert re.equals(acs_expected)
 
@@ -48,8 +48,10 @@ class TestGeoDataFrame:
         return BEAdata_expected
 
     def test_BEAParser(self, bea_data, bea_expected):
-        geoDf = GeoDataFrame('Livingston', 'BEA')
+        print(bea_expected)
+        geoDf = GeoDataFrame('Livingston,MI', 'BEA')
         re = geoDf.BEAParser(bea_data, gdp=False)
+        print(re)
         assert re.equals(bea_expected)
 
     @pytest.fixture()
@@ -65,7 +67,7 @@ class TestGeoDataFrame:
         return BEAGDPdata_expected
 
     def test_BEAGDPParser(self, bea_gdp_data, bea_gdp_expected):
-        geoDf = GeoDataFrame('Livingston', 'BEA-GDP')
+        geoDf = GeoDataFrame('Ann Arbor Metro', 'BEAGDP')
         re = geoDf.BEAParser(bea_gdp_data, gdp=True)
         assert re.equals(bea_gdp_expected)
 
@@ -82,12 +84,12 @@ class TestGeoDataFrame:
         return BLSdata_expected
 
     def test_BLSParser(self, bls_data, bls_expected):
-        geoDf = GeoDataFrame('Livingston', 'BLS')
+        geoDf = GeoDataFrame('Livingston,MI', 'BLS')
         re = geoDf.BLSParser(bls_data)
         assert re.equals(bls_expected)
 
     def test_load_ACS(self, acs_data, acs_expected):
-        geoDf = GeoDataFrame("livingston", "ACS")
+        geoDf = GeoDataFrame("Livingston,MI", "ACS")
         assert geoDf.DataFrame.shape == (0, 0)
         geoDf.load(acs_data, source="ACS", year="2010")
         assert geoDf.DataFrame.equals(acs_expected)
@@ -97,7 +99,7 @@ class TestGeoDataFrame:
                                                 axis=0, sort=True))
 
     def test_load_BLS(self, bls_data, bls_expected):
-        geoDf = GeoDataFrame("livingston", "BLS")
+        geoDf = GeoDataFrame("Livingston,MI", "BLS")
         assert geoDf.DataFrame.shape == (0, 0)
         geoDf.load(bls_data, source="BLS")
         assert geoDf.DataFrame.iloc[:, 0].equals(

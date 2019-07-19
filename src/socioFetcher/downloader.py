@@ -24,7 +24,7 @@ class Downloader:
 
         Parameters:
            dataset:List   List of dataset name, value must be
-                        must be one of BLS, BEA,BEA-GDP, or ACS
+                        must be one of BLS, BEA,BEAGDP, or ACS
            fipsList:List   List of FIPS code
            data:dict    dict to save downloaded data 
            (optional)
@@ -40,9 +40,9 @@ class Downloader:
             raise ValueError(
                 "value in dataset is not supported"
             )
-        elif len(dataset) > 1 and any([True if i.upper() == "BEA-GDP" else False for i in dataset]):
+        elif len(dataset) > 1 and any([True if i.upper() == "BEAGDP" else False for i in dataset]):
             raise ValueError(
-                "BEA-GDP only apply for metropolitan area, dataset cannot include both BEA-GDP and other dataset type"
+                "BEAGDP only apply for metropolitan area, dataset cannot include both BEAGDP and other dataset type"
             )
 
         if type(fipsList) != type([]) or len(fipsList) < 1:
@@ -76,7 +76,7 @@ class Downloader:
                 res = self.downloadBLS()
             elif dataset.upper() == "BEA":
                 res = self.downloadBEAIncome()
-            elif dataset.upper() == "BEA-GDP":
+            elif dataset.upper() == "BEAGDP":
                 res = self.downloadBEAGDP()
             elif dataset.upper() == "ACS":
                 res = self.downloadACS()
@@ -252,7 +252,7 @@ class Downloader:
 
     def downloadBEAGDP(self):
         """
-            Download BEA-GDP data given configuration from constructor.
+            Download BEAGDP data given configuration from constructor.
 
         Parameters:
             None
@@ -262,7 +262,10 @@ class Downloader:
                 key: FIPS:str,
                 value: socioFetcher.GeoDataFrame
         """
-        GDPdata = GeoDataFrame("Region", dataset="BEA-GDP")
+        GDPdataDict = {}
+        for areaID in self.fipsList:
+            name = self.config["GLOBAL_AREA_CODE"][areaID]
+            GDPdataDict[areaID] = GeoDataFrame(name, dataset="BEAGDP")
         beaPayloadList = self._getBEAGDPPayload()
         for BEApaylaod in beaPayloadList:
             payload = {
@@ -288,8 +291,9 @@ class Downloader:
             areaCode = BEApaylaod[0]
             print("Loading Data for " +
                   self.config["GLOBAL_AREA_CODE"][areaCode])
-            GDPdata.load(json_data, source="BEA-GDP")
-        return GDPdata.DataFrame
+            GDPdataDict[BEApaylaod[0]].load(json_data, source="BEAGDP")
+
+        return GDPdataDict
 
     def downloadACS(self):
         """
@@ -359,7 +363,7 @@ class Downloader:
                 r = requests.get(f"https://api.census.gov/data/{detPay[0]}/acs/acs1",
                                  params=payload)
             json_data = r.json()
-            areaCode = detPay[1]
+            areaCode = detPay[2]+detPay[1]
             print("Loading Data for " +
                   self.config["GLOBAL_AREA_CODE"][areaCode])
             detGeoClassDict[detPay[2]+detPay[1]].load(
@@ -435,7 +439,12 @@ class Downloader:
         return ACSPayloadDict
 
 
-dl = Downloader(["BEA"], ["26093"])
+dl = Downloader(['BEAGDP'], ["11460"])
 dl.download()
 dl.summarize(by="geography")
 dl.export("/Users/tianxie/Desktop/testFolder")
+
+# dl = Downloader(['BEA'], ["26093"])
+# dl.download()
+# dl.summarize(by="geography")
+# dl.export("/Users/tianxie/Desktop/testFolder")

@@ -9,7 +9,7 @@ class TestDownloader:
         (['BEA', 'BLS', 'ACS'], ["26093"]),
         (['BEA', 'BLS'], ["26093"]),
         (['BEA'], ["26093"]),
-        (['BEA-GDP'], ["11460"])
+        (['BEAGDP'], ["11460"])
     ])
     def test_init_dataset(self, dataset, fipsList):
         downloader = Downloader(dataset, fipsList)
@@ -26,7 +26,7 @@ class TestDownloader:
         with pytest.raises(ValueError):
             Downloader(["INVALID"], ["26093"])
         with pytest.raises(ValueError):
-            Downloader(["BEA", "BEA-GDP"], ["11460"])
+            Downloader(["BEA", "BEAGDP"], ["11460"])
 
     def test_init_fipsList_get_raise(self):
         with pytest.raises(TypeError):
@@ -65,7 +65,7 @@ class TestDownloader:
 
     def test_getBEAGDPPayload(self):
         fipsList = ["11460"]
-        downloader = Downloader(["BEA-GDP"], fipsList)
+        downloader = Downloader(["BEAGDP"], fipsList)
         expected_series_list = []
         for payload in itertools.product(fipsList,
                                          config["BEA_GDP_COMPONENT"],
