@@ -40,14 +40,20 @@ class Downloader:
             raise ValueError(
                 "value in dataset is not supported"
             )
+        elif len(dataset) > 1 and any([True if i.upper() == "BEA-GDP" else False for i in dataset]):
+            raise ValueError(
+                "BEA-GDP only apply for metropolitan area, dataset cannot include both BEA-GDP and other dataset type"
+            )
+
         if type(fipsList) != type([]) or len(fipsList) < 1:
             raise TypeError(
                 "fipsList is not a valid list with more than one element")
-        # Check the length of FIPS code
-        elif not all([True if len(i) == 5 else False for i in fipsList]):
+        # Check the validity of FIPS code
+        elif not all([True if i in config.get("GLOBAL_AREA_CODE").keys() else False for i in fipsList]):
             raise ValueError(
                 "value in fipsList is not supported"
             )
+
         self.dataset = dataset
         self.fipsList = fipsList
         self.data = {fips: {} for fips in self.fipsList}
@@ -429,7 +435,7 @@ class Downloader:
         return ACSPayloadDict
 
 
-dl = Downloader(["BEA-GDP"], ["11460"])
+dl = Downloader(["BEA"], ["26093"])
 dl.download()
 dl.summarize(by="geography")
 dl.export("/Users/tianxie/Desktop/testFolder")

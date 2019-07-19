@@ -85,3 +85,20 @@ class TestGeoDataFrame:
         geoDf = GeoDataFrame('Livingston', 'BLS')
         re = geoDf.BLSParser(bls_data)
         assert re.equals(bls_expected)
+
+    def test_load_ACS(self, acs_data, acs_expected):
+        geoDf = GeoDataFrame("livingston", "ACS")
+        assert geoDf.DataFrame.shape == (0, 0)
+        geoDf.load(acs_data, source="ACS", year="2010")
+        assert geoDf.DataFrame.equals(acs_expected)
+        geoDf.load(acs_data, source="ACS", year="2011")
+        acs_expected_2 = acs_expected.rename({"2010": "2011"}, axis="rows")
+        assert geoDf.DataFrame.equals(pd.concat([acs_expected, acs_expected_2],
+                                                axis=0, sort=True))
+
+    def test_load_BLS(self, bls_data, bls_expected):
+        geoDf = GeoDataFrame("livingston", "BLS")
+        assert geoDf.DataFrame.shape == (0, 0)
+        geoDf.load(bls_data, source="BLS")
+        assert geoDf.DataFrame.iloc[:, 0].equals(
+            bls_expected.sort_index(axis=0))

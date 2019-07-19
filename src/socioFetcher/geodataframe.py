@@ -52,7 +52,7 @@ class GeoDataFrame:
         elif source.upper() == "BEA" and self.dataset == "BEA":
             parsedData = self.BEAParser(data["BEAAPI"]["Results"])
             self.DataFrame = pd.concat([self.DataFrame, parsedData],
-                                       axis=1, sort=True)
+                                       axis=1)
         elif source.upper() == "BEA-GDP" and self.dataset == "BEA-GDP":
             parsedData = self.BEAParser(data["BEAAPI"]["Results"], gdp=True)
             if self.DataFrame.shape[0] == 0:
