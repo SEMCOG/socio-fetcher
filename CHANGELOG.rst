@@ -8,21 +8,35 @@ Expected use
 --------------
 ::
 
+    # config
+    from socioFetcher import ConfigDefault
+    myConfig = Config()
+    myConfig.show() # show current config
+    myConfig.Global.areaCode = {...}
+    myConfig.Global.outputPath = "path/to/folder"
+    myConfig.BLS.key = "key"
+    ...
+    # download
     from socioFetcher import Downloader
-    downloader = Downloader(["BEA", "BLS"], ["26193"], **kwargs)
+    downloader = Downloader(["BEA", "BLS"], ["26193"], config=myConfig)
     downloader.download()
     downloader.data # downloaded data
+    # summarize
     downloader.sumerize(by="geography")
+    # export
     downloader.export("path/to/save/data",**kwargs)
 
 Todo
 --------------
-- Testing geodataframe.py
-- Testing downloader.py
+- Improve performace by using requests.session
+- Simplify config api by including us module ???
+    us only include state level info
+- Include us
 - Testing summary.py
 
 Log
 --------------
+- 07/22 Refactor config.py to include a class to hold all config attributes
 - 07/19 Add unit test for downloader, add func test for download,
         fix bugs in BEA download
 - 07/18 Add summary and export feature to Downloader

@@ -1,7 +1,7 @@
 import pytest
 import itertools
 from socioFetcher.downloader import Downloader
-from socioFetcher.config import config
+from socioFetcher.config import Config
 
 
 class TestDownloader:
@@ -16,7 +16,7 @@ class TestDownloader:
         assert downloader.dataset == dataset
         assert downloader.fipsList == fipsList
         assert downloader.data == {fips: {} for fips in fipsList}
-        assert downloader.config == config
+        assert isinstance(downloader.config, Config)
 
     def test_init_dataset_get_raise(self):
         with pytest.raises(TypeError):
@@ -40,12 +40,13 @@ class TestDownloader:
         fipsList = ["26093"]
         downloader = Downloader(["BLS"], fipsList)
         expected_series_list = []
-        for sridList in itertools.product(config["BLS_TABLE_NUMBER"],
+        config = Config()
+        for sridList in itertools.product(config.BLS.TABLE_NUMBER,
                                           fipsList,
-                                          config["BLS_DATA_TYPE"],
-                                          config["BLS_SIZE"],
-                                          config["BLS_OWNERSHIP"],
-                                          config["BLS_NAICS_CODE_LIST"]):
+                                          config.BLS.DATA_TYPE,
+                                          config.BLS.SIZE,
+                                          config.BLS.OWNERSHIP,
+                                          config.BLS.NAICS_CODE_LIST):
             srid = ""
             for item in sridList:
                 srid += item
@@ -56,10 +57,11 @@ class TestDownloader:
         fipsList = ["26093"]
         downloader = Downloader(["BEA"], fipsList)
         expected_series_list = []
+        config = Config()
         for payload in itertools.product(fipsList,
-                                         config["BEA_LINE_CODE"],
-                                         config["BEA_TABLE_NAME"],
-                                         config["BEA_YEAR"]):
+                                         config.BEA.LINE_CODE,
+                                         config.BEA.TABLE_NAME,
+                                         config.BEA.YEAR):
             expected_series_list.append(payload)
         assert expected_series_list == downloader._getBEAIncomePayload()
 
@@ -67,9 +69,10 @@ class TestDownloader:
         fipsList = ["11460"]
         downloader = Downloader(["BEAGDP"], fipsList)
         expected_series_list = []
+        config = Config()
         for payload in itertools.product(fipsList,
-                                         config["BEA_GDP_COMPONENT"],
-                                         config["BEA_GDP_INDUSTRY"],
-                                         config["BEA_GDP_YEAR"]):
+                                         config.BEA.GDP_COMPONENT,
+                                         config.BEA.GDP_INDUSTRY,
+                                         config.BEA.GDP_YEAR):
             expected_series_list.append(payload)
         assert expected_series_list == downloader._getBEAGDPPayload()

@@ -5,7 +5,7 @@ import pandas as pd
 import json
 import warnings
 from socioFetcher.geodataframe import GeoDataFrame
-from socioFetcher.config import config
+from socioFetcher.config import Config
 
 
 class Downloader:
@@ -18,7 +18,7 @@ class Downloader:
         fipsList:List   FIPS list for download use
     """
 
-    def __init__(self, dataset, fipsList, **kwargs):
+    def __init__(self, dataset, fipsList, config=Config()):
         """
             The constructor for Downloader class
 
@@ -32,11 +32,15 @@ class Downloader:
                         name, subject, detail
         """
         # value checking
+        if config and not isinstance(config, Config):
+            raise TypeError(
+                "Config must be in Config object"
+            )
         if type(dataset) != type([]) or len(dataset) < 1:
             raise TypeError(
                 "dataset is not a valid list with more than one element")
         # Check the dataset name inside the allowed range
-        elif not all([True if i in config.get("GLOBAL_ALLOWED_DATASET") else False for i in dataset]):
+        elif not all([True if i in config.Global.ALLOWED_DATASET else False for i in dataset]):
             raise ValueError(
                 "value in dataset is not supported"
             )
@@ -49,7 +53,7 @@ class Downloader:
             raise TypeError(
                 "fipsList is not a valid list with more than one element")
         # Check the validity of FIPS code
-        elif not all([True if i in config.get("GLOBAL_AREA_CODE").keys() else False for i in fipsList]):
+        elif not all([True if i in config.Global.AREA_CODE.keys() else False for i in fipsList]):
             raise ValueError(
                 "value in fipsList is not supported"
             )
@@ -58,7 +62,6 @@ class Downloader:
         self.fipsList = fipsList
         self.data = {fips: {} for fips in self.fipsList}
         self.config = config
-        self.config.update(kwargs)
 
     def download(self):
         """
@@ -98,7 +101,7 @@ class Downloader:
         """
         if not summarize:
             for areaID, obj in self.data.items():
-                areaName = self.config["GLOBAL_AREA_CODE"][areaID]
+                areaName = self.config.Global.AREA_CODE[areaID]
                 for datasetName, geoDf in obj.items():
                     savePath = os.path.join(path, areaName)
                     os.makedirs(savePath, exist_ok=True)
@@ -109,7 +112,7 @@ class Downloader:
             summary = self.summarize(by=by)
             if by.lower() == "geography":
                 for areaID, Df in summary.items():
-                    areaName = self.config["GLOBAL_AREA_CODE"][areaID]
+                    areaName = self.config.Global.AREA_CODE[areaID]
                     Df.to_csv(
                         os.path.join(path, f"{areaName}.csv")
                     )
@@ -148,7 +151,7 @@ class Downloader:
             for datasetName in self.dataset:
                 datasetTable = pd.DataFrame()
                 for areaID, obj in self.data.items():
-                    areaName = self.config["GLOBAL_AREA_CODE"][areaID]
+                    areaName = self.config.Global.AREA_CODE[areaID]
                     localTable = obj[datasetName].DataFrame
                     localTable = localTable.rename(lambda x: f"{areaName} {x}",
                                                    axis="columns")
@@ -176,15 +179,15 @@ class Downloader:
         # Creating counties class to hold class
         geoClassDict = {}
         for areaID in self.fipsList:
-            name = self.config["GLOBAL_AREA_CODE"][areaID]
+            name = self.config.Global.AREA_CODE[areaID]
             geoClassDict[areaID] = GeoDataFrame(name, dataset="BLS")
         for srsList in seriesListChunk:
             headers = {'Content-type': 'application/json'}
             data = json.dumps(
                 {"seriesid": srsList,
-                 "startyear": self.config["BLS_START_YEAR"],
-                 "endyear": self.config["BLS_END_YEAR"],
-                 "registrationkey": self.config["BLS_API_KEY"],
+                 "startyear": self.config.BLS.START_YEAR,
+                 "endyear": self.config.BLS.END_YEAR,
+                 "registrationkey": self.config.BLS.API_KEY,
                  "calculations": "true",
                  "annualaverage": "true"})
             r = requests.post(
@@ -202,7 +205,7 @@ class Downloader:
             for seriesResult in json_data["Results"]["series"]:
                 areaCode = seriesResult["seriesID"][3:8]
                 print("Loading Data for " +
-                      self.config["GLOBAL_AREA_CODE"][areaCode])
+                      self.config.Global.AREA_CODE[areaCode])
                 geoClassDict[areaCode].load(seriesResult)
         return geoClassDict
 
@@ -220,12 +223,12 @@ class Downloader:
         """
         geoClassDict = {}
         for areaID in self.fipsList:
-            name = self.config["GLOBAL_AREA_CODE"][areaID]
+            name = self.config.Global.AREA_CODE[areaID]
             geoClassDict[areaID] = GeoDataFrame(name, dataset="BEA")
         beaPayloadList = self._getBEAIncomePayload()
         for BEApaylaod in beaPayloadList:
             payload = {
-                "UserID": self.config["BEA_API_KEY"],
+                "UserID": self.config.BEA.API_KEY,
                 "Method": "GetData",
                 "datasetname": "Regional",
                 "GeoFips": BEApaylaod[0],
@@ -246,7 +249,7 @@ class Downloader:
             json_data = r.json()
             areaCode = BEApaylaod[0]
             print("Loading Data for " +
-                  self.config["GLOBAL_AREA_CODE"][areaCode])
+                  self.config.Global.AREA_CODE[areaCode])
             geoClassDict[areaCode].load(json_data, source="BEA")
         return geoClassDict
 
@@ -264,12 +267,12 @@ class Downloader:
         """
         GDPdataDict = {}
         for areaID in self.fipsList:
-            name = self.config["GLOBAL_AREA_CODE"][areaID]
+            name = self.config.Global.AREA_CODE[areaID]
             GDPdataDict[areaID] = GeoDataFrame(name, dataset="BEAGDP")
         beaPayloadList = self._getBEAGDPPayload()
         for BEApaylaod in beaPayloadList:
             payload = {
-                "UserID": self.config["BEA_API_KEY"],
+                "UserID": self.config.BEA.API_KEY,
                 "Method": "GetData",
                 "datasetname": "REGIONALPRODUCT",
                 "GeoFips": BEApaylaod[0],
@@ -290,7 +293,7 @@ class Downloader:
             json_data = r.json()
             areaCode = BEApaylaod[0]
             print("Loading Data for " +
-                  self.config["GLOBAL_AREA_CODE"][areaCode])
+                  self.config.Global.AREA_CODE[areaCode])
             GDPdataDict[BEApaylaod[0]].load(json_data, source="BEAGDP")
 
         return GDPdataDict
@@ -310,7 +313,7 @@ class Downloader:
         geoClassDict = {}
         detGeoClassDict = {}
         for areaID in self.fipsList:
-            name = self.config["GLOBAL_AREA_CODE"][areaID]
+            name = self.config.Global.AREA_CODE[areaID]
             geoClassDict[areaID] = GeoDataFrame(name, dataset="ACS")
             detGeoClassDict[areaID] = GeoDataFrame(name, dataset="ACS")
         ACSPayload = self._getACSPayload()
@@ -321,7 +324,7 @@ class Downloader:
             for att in sbjPay[-1]:
                 getSbjStr += att+","
             payload = {
-                "key": self.config["CENSUS_API_KEY"],
+                "key": self.config.Census.API_KEY,
                 "get": getSbjStr[:-1],  # remove the last comma
                 "for": "county:"+sbjPay[1],
                 "in": "state:"+sbjPay[2]
@@ -339,7 +342,7 @@ class Downloader:
             json_data = r.json()
             areaCode = sbjPay[2]+sbjPay[1]
             print("Loading Data for " +
-                  self.config["GLOBAL_AREA_CODE"][areaCode])
+                  self.config.Global.AREA_CODE[areaCode])
             geoClassDict[areaCode].load(
                 json_data, source="ACS", year=sbjPay[0])
 
@@ -348,7 +351,7 @@ class Downloader:
             for att in detPay[-1]:
                 getDetStr += att+","
             payload = {
-                "key": self.config["CENSUS_API_KEY"],
+                "key": self.config.Census.API_KEY,
                 "get": getDetStr[:-1],  # remove the last comma
                 "for": "county:"+detPay[1],
                 "in": "state:"+detPay[2]
@@ -365,7 +368,7 @@ class Downloader:
             json_data = r.json()
             areaCode = detPay[2]+detPay[1]
             print("Loading Data for " +
-                  self.config["GLOBAL_AREA_CODE"][areaCode])
+                  self.config.Global.AREA_CODE[areaCode])
             detGeoClassDict[detPay[2]+detPay[1]].load(
                 json_data, source="ACS", year=detPay[0])
         # merge two dicts
@@ -382,12 +385,12 @@ class Downloader:
             Helper function to Generate Series List form given parameter list
         """
         seriesList = []
-        for sridList in itertools.product(self.config["BLS_TABLE_NUMBER"],
+        for sridList in itertools.product(self.config.BLS.TABLE_NUMBER,
                                           self.fipsList,
-                                          self.config["BLS_DATA_TYPE"],
-                                          self.config["BLS_SIZE"],
-                                          self.config["BLS_OWNERSHIP"],
-                                          self.config["BLS_NAICS_CODE_LIST"]):
+                                          self.config.BLS.DATA_TYPE,
+                                          self.config.BLS.SIZE,
+                                          self.config.BLS.OWNERSHIP,
+                                          self.config.BLS.NAICS_CODE_LIST):
             srid = ""
             for item in sridList:
                 srid += item
@@ -400,9 +403,9 @@ class Downloader:
         """
         BEApayloadList = []
         for payload in itertools.product(self.fipsList,
-                                         self.config["BEA_LINE_CODE"],
-                                         self.config["BEA_TABLE_NAME"],
-                                         self.config["BEA_YEAR"]):
+                                         self.config.BEA.LINE_CODE,
+                                         self.config.BEA.TABLE_NAME,
+                                         self.config.BEA.YEAR):
             BEApayloadList.append(payload)
         return BEApayloadList
 
@@ -412,9 +415,9 @@ class Downloader:
         """
         BEApayloadList = []
         for payload in itertools.product(self.fipsList,
-                                         self.config["BEA_GDP_COMPONENT"],
-                                         self.config["BEA_GDP_INDUSTRY"],
-                                         self.config["BEA_GDP_YEAR"]):
+                                         self.config.BEA.GDP_COMPONENT,
+                                         self.config.BEA.GDP_INDUSTRY,
+                                         self.config.BEA.GDP_YEAR):
             BEApayloadList.append(payload)
         return BEApayloadList
 
@@ -426,23 +429,23 @@ class Downloader:
             "SUBJECT": [],
             "DETAIL": []
         }
-        for payload in itertools.product(self.config["CENSUS_YEAR"],
+        for payload in itertools.product(self.config.Census.YEAR,
                                          [x[2:] for x in self.fipsList],
                                          [x[:2] for x in self.fipsList]):
             # append subject item id to the end
             subjectList = list(payload)
             detailList = list(payload)
-            subjectList.append(self.config["CENSUS_SUBJECT_LIST"].keys())
-            detailList.append(self.config["CENSUS_DETAIL_LIST"].keys())
+            subjectList.append(self.config.Census.SUBJECT_LIST.keys())
+            detailList.append(self.config.Census.DETAIL_LIST.keys())
             ACSPayloadDict["SUBJECT"].append(subjectList)
             ACSPayloadDict["DETAIL"].append(detailList)
         return ACSPayloadDict
 
 
-dl = Downloader(['BEAGDP'], ["11460"])
-dl.download()
-dl.summarize(by="geography")
-dl.export("/Users/tianxie/Desktop/testFolder")
+# dl = Downloader(['BEAGDP'], ["11460"])
+# dl.download()
+# dl.summarize(by="geography")
+# dl.export("/Users/tianxie/Desktop/testFolder")
 
 # dl = Downloader(['BEA'], ["26093"])
 # dl.download()
