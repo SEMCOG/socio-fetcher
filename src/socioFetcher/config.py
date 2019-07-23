@@ -6,11 +6,8 @@
 
 class Global:
     def __init__(self):
-        self.OUTPUT_FOLDER = "data/output"
-        self.OUTPUT_PICKLE_FOLDER = "data/pickles"
-        self.OUTPUT_SUMMARY_FOLDER = "data/summary/"
         self.ALLOWED_DATASET = ["BLS", "BEA", "BEAGDP", "ACS"]
-        self.AREA_CODE = {"26093": "Livingston,MI",
+        self.FIPS_CODE = {"26093": "Livingston,MI",
                           "26099": "Macomb,MI",
                           "26115": "Monroe,MI",
                           "26125": "Oakland,MI",
@@ -30,7 +27,7 @@ class BLS:
         # represent a county.
 
         self.TABLE_NUMBER = ["ENU"]  # QCEW Data
-        self.AREA_CODE = {"26093": "Livingston,MI",
+        self.FIPS_CODE = {"26093": "Livingston,MI",
                           "26099": "Macomb,MI",
                           "26115": "Monroe,MI",
                           "26125": "Oakland,MI",

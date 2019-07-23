@@ -53,7 +53,7 @@ class Downloader:
             raise TypeError(
                 "fipsList is not a valid list with more than one element")
         # Check the validity of FIPS code
-        elif not all([True if i in config.Global.AREA_CODE.keys() else False for i in fipsList]):
+        elif not all([True if i in config.Global.FIPS_CODE.keys() else False for i in fipsList]):
             raise ValueError(
                 "value in fipsList is not supported"
             )
@@ -101,7 +101,7 @@ class Downloader:
         """
         if not summarize:
             for areaID, obj in self.data.items():
-                areaName = self.config.Global.AREA_CODE[areaID]
+                areaName = self.config.Global.FIPS_CODE[areaID]
                 for datasetName, geoDf in obj.items():
                     savePath = os.path.join(path, areaName)
                     os.makedirs(savePath, exist_ok=True)
@@ -112,7 +112,7 @@ class Downloader:
             summary = self.summarize(by=by)
             if by.lower() == "geography":
                 for areaID, Df in summary.items():
-                    areaName = self.config.Global.AREA_CODE[areaID]
+                    areaName = self.config.Global.FIPS_CODE[areaID]
                     Df.to_csv(
                         os.path.join(path, f"{areaName}.csv")
                     )
@@ -151,7 +151,7 @@ class Downloader:
             for datasetName in self.dataset:
                 datasetTable = pd.DataFrame()
                 for areaID, obj in self.data.items():
-                    areaName = self.config.Global.AREA_CODE[areaID]
+                    areaName = self.config.Global.FIPS_CODE[areaID]
                     localTable = obj[datasetName].DataFrame
                     localTable = localTable.rename(lambda x: f"{areaName} {x}",
                                                    axis="columns")
@@ -179,10 +179,12 @@ class Downloader:
         # Creating counties class to hold class
         geoClassDict = {}
         for areaID in self.fipsList:
-            name = self.config.Global.AREA_CODE[areaID]
+            name = self.config.Global.FIPS_CODE[areaID]
             geoClassDict[areaID] = GeoDataFrame(name, dataset="BLS")
+        # Initialize session and default data
+        s = requests.Session()
+        s.headers = {'Content-type': 'application/json'}
         for srsList in seriesListChunk:
-            headers = {'Content-type': 'application/json'}
             data = json.dumps(
                 {"seriesid": srsList,
                  "startyear": self.config.BLS.START_YEAR,
@@ -190,22 +192,22 @@ class Downloader:
                  "registrationkey": self.config.BLS.API_KEY,
                  "calculations": "true",
                  "annualaverage": "true"})
-            r = requests.post(
+            r = s.post(
                 'https://api.bls.gov/publicAPI/v2/timeseries/data/',
-                data=data, headers=headers)
+                data=data)
             while r.status_code != requests.codes.ok:
                 warnings.warn(
                     f"Request server fail with error code {str(p.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
-                r = requests.post(
+                r = s.post(
                     'https://api.bls.gov/publicAPI/v2/timeseries/data/',
                     data=data, headers=headers)
             json_data = r.json()
             for seriesResult in json_data["Results"]["series"]:
                 areaCode = seriesResult["seriesID"][3:8]
                 print("Loading Data for " +
-                      self.config.Global.AREA_CODE[areaCode])
+                      self.config.Global.FIPS_CODE[areaCode])
                 geoClassDict[areaCode].load(seriesResult)
         return geoClassDict
 
@@ -223,33 +225,35 @@ class Downloader:
         """
         geoClassDict = {}
         for areaID in self.fipsList:
-            name = self.config.Global.AREA_CODE[areaID]
+            name = self.config.Global.FIPS_CODE[areaID]
             geoClassDict[areaID] = GeoDataFrame(name, dataset="BEA")
         beaPayloadList = self._getBEAIncomePayload()
+        # Initialize session and default data
+        s = requests.Session()
+        s.params = {
+            "UserID": self.config.BEA.API_KEY,
+            "Method": "GetData",
+            "datasetname": "Regional"
+        }
         for BEApaylaod in beaPayloadList:
             payload = {
-                "UserID": self.config.BEA.API_KEY,
-                "Method": "GetData",
-                "datasetname": "Regional",
                 "GeoFips": BEApaylaod[0],
                 "LineCode": BEApaylaod[1],
                 "TableName": BEApaylaod[2],
                 "Year": BEApaylaod[3]
             }
-
-            r = requests.get("https://apps.bea.gov/api/data/",
-                             params=payload)
+            s.params.update(payload)
+            r = s.get("https://apps.bea.gov/api/data/")
             while r.status_code != requests.codes.ok:
                 warnings.warn(
                     f"Request server fail with error code ${str(p.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
-                r = requests.get("https://apps.bea.gov/api/data/",
-                                 params=payload)
+                r = s.get("https://apps.bea.gov/api/data/")
             json_data = r.json()
             areaCode = BEApaylaod[0]
             print("Loading Data for " +
-                  self.config.Global.AREA_CODE[areaCode])
+                  self.config.Global.FIPS_CODE[areaCode])
             geoClassDict[areaCode].load(json_data, source="BEA")
         return geoClassDict
 
@@ -267,33 +271,35 @@ class Downloader:
         """
         GDPdataDict = {}
         for areaID in self.fipsList:
-            name = self.config.Global.AREA_CODE[areaID]
+            name = self.config.Global.FIPS_CODE[areaID]
             GDPdataDict[areaID] = GeoDataFrame(name, dataset="BEAGDP")
         beaPayloadList = self._getBEAGDPPayload()
+        # Initialize session and default data
+        s = requests.Session()
+        s.params = {
+            "UserID": self.config.BEA.API_KEY,
+            "Method": "GetData",
+            "datasetname": "REGIONALPRODUCT"
+        }
         for BEApaylaod in beaPayloadList:
             payload = {
-                "UserID": self.config.BEA.API_KEY,
-                "Method": "GetData",
-                "datasetname": "REGIONALPRODUCT",
                 "GeoFips": BEApaylaod[0],
                 "component": BEApaylaod[1],
                 "IndustryId": BEApaylaod[2],
                 "Year": BEApaylaod[3]
             }
-
-            r = requests.get("https://apps.bea.gov/api/data/",
-                             params=payload)
+            s.params.update(payload)
+            r = s.get("https://apps.bea.gov/api/data/")
             while r.status_code != requests.codes.ok:
                 warnings.warn(
                     f"Request server fail with error code ${str(p.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
-                r = requests.get("https://apps.bea.gov/api/data/",
-                                 params=payload)
+                r = s.get("https://apps.bea.gov/api/data/")
             json_data = r.json()
             areaCode = BEApaylaod[0]
             print("Loading Data for " +
-                  self.config.Global.AREA_CODE[areaCode])
+                  self.config.Global.FIPS_CODE[areaCode])
             GDPdataDict[BEApaylaod[0]].load(json_data, source="BEAGDP")
 
         return GDPdataDict
@@ -313,36 +319,40 @@ class Downloader:
         geoClassDict = {}
         detGeoClassDict = {}
         for areaID in self.fipsList:
-            name = self.config.Global.AREA_CODE[areaID]
+            name = self.config.Global.FIPS_CODE[areaID]
             geoClassDict[areaID] = GeoDataFrame(name, dataset="ACS")
             detGeoClassDict[areaID] = GeoDataFrame(name, dataset="ACS")
         ACSPayload = self._getACSPayload()
         subjectPayload = ACSPayload["SUBJECT"]
         detailPayload = ACSPayload["DETAIL"]
+        # Initialize session and default data
+        s = requests.Session()
+        s.params = {
+            "key": self.config.Census.API_KEY
+        }
         for sbjPay in subjectPayload:
             getSbjStr = ""
             for att in sbjPay[-1]:
                 getSbjStr += att+","
             payload = {
-                "key": self.config.Census.API_KEY,
                 "get": getSbjStr[:-1],  # remove the last comma
                 "for": "county:"+sbjPay[1],
                 "in": "state:"+sbjPay[2]
             }
-
-            r = requests.get(f"https://api.census.gov/data/{sbjPay[0]}/acs/acs5/subject",
-                             params=payload)
+            s.params.update(payload)
+            r = s.get(
+                f"https://api.census.gov/data/{sbjPay[0]}/acs/acs5/subject")
             while r.status_code != requests.codes.ok:
                 warnings.warn(
                     f"Request server fail with error code ${str(p.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
-                r = requests.get(f"https://api.census.gov/data/{sbjPay[0]}/acs/acs5/subject",
-                                 params=payload)
+                r = s.get(
+                    f"https://api.census.gov/data/{sbjPay[0]}/acs/acs5/subject")
             json_data = r.json()
             areaCode = sbjPay[2]+sbjPay[1]
             print("Loading Data for " +
-                  self.config.Global.AREA_CODE[areaCode])
+                  self.config.Global.FIPS_CODE[areaCode])
             geoClassDict[areaCode].load(
                 json_data, source="ACS", year=sbjPay[0])
 
@@ -351,24 +361,22 @@ class Downloader:
             for att in detPay[-1]:
                 getDetStr += att+","
             payload = {
-                "key": self.config.Census.API_KEY,
                 "get": getDetStr[:-1],  # remove the last comma
                 "for": "county:"+detPay[1],
                 "in": "state:"+detPay[2]
             }
-            r = requests.get(f"https://api.census.gov/data/{detPay[0]}/acs/acs1",
-                             params=payload)
+            r = s.get(f"https://api.census.gov/data/{detPay[0]}/acs/acs1",
+                      params=payload)
             while r.status_code != requests.codes.ok:
                 warnings.warn(
                     f"Request server fail with error code ${str(p.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
-                r = requests.get(f"https://api.census.gov/data/{detPay[0]}/acs/acs1",
-                                 params=payload)
+                r = s.get(f"https://api.census.gov/data/{detPay[0]}/acs/acs1")
             json_data = r.json()
             areaCode = detPay[2]+detPay[1]
             print("Loading Data for " +
-                  self.config.Global.AREA_CODE[areaCode])
+                  self.config.Global.FIPS_CODE[areaCode])
             detGeoClassDict[detPay[2]+detPay[1]].load(
                 json_data, source="ACS", year=detPay[0])
         # merge two dicts
@@ -442,6 +450,7 @@ class Downloader:
         return ACSPayloadDict
 
 
+# Test
 # dl = Downloader(['BEAGDP'], ["11460"])
 # dl.download()
 # dl.summarize(by="geography")

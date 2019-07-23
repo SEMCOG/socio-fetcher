@@ -1,7 +1,9 @@
 import pytest
+import os
 import itertools
 from socioFetcher.downloader import Downloader
 from socioFetcher.config import Config
+from socioFetcher.geodataframe import GeoDataFrame
 
 
 class TestDownloader:
@@ -76,3 +78,56 @@ class TestDownloader:
                                          config.BEA.GDP_YEAR):
             expected_series_list.append(payload)
         assert expected_series_list == downloader._getBEAGDPPayload()
+
+    def test_downloadBLS(self):
+        fipsList = ["26093"]
+        downloader = Downloader(["BLS"], fipsList)
+        downloader.download()
+        assert downloader.data
+        assert isinstance(downloader.data["26093"]["BLS"], GeoDataFrame)
+
+    def test_downloadBEA(self):
+        fipsList = ["26093"]
+        downloader = Downloader(["BEA"], fipsList)
+        downloader.download()
+        assert downloader.data
+        assert isinstance(downloader.data["26093"]["BEA"], GeoDataFrame)
+
+    def test_downloadBEAGDP(self):
+        fipsList = ["11460"]
+        downloader = Downloader(["BEAGDP"], fipsList)
+        downloader.download()
+        assert downloader.data
+        assert isinstance(downloader.data["11460"]["BEAGDP"], GeoDataFrame)
+
+    def test_downloadACS(self):
+        fipsList = ["26093"]
+        downloader = Downloader(["ACS"], fipsList)
+        downloader.download()
+        assert downloader.data
+        assert isinstance(downloader.data["26093"]["ACS"], GeoDataFrame)
+
+    @pytest.mark.parametrize('dataset, fipsList', [
+        (['BEA', 'BLS', 'ACS'], ["26093"]),
+        (['BEA', 'BLS'], ["26093"]),
+        (['BEA'], ["26093"]),
+        (['BEAGDP'], ["11460"])
+    ])
+    def test_download(self, dataset, fipsList):
+        downloader = Downloader(dataset, fipsList)
+        downloader.download()
+        data = downloader.data
+        assert list(data.keys()) == fipsList
+        assert list(data[fipsList[0]].keys()) == dataset
+
+    @pytest.mark.parametrize('summarize, by', [
+        (False, "geography"),
+        (True, "geography"),
+        (False, "dataset"),
+        (True, "dataset")
+    ])
+    def test_export(self, summarize, by, tmpdir):
+        downloader = Downloader(['BEA', 'BLS', 'ACS'], ["26161", "26163"])
+        downloader.download()
+        downloader.export(tmpdir, summarize=summarize, by=by)
+        assert 1
