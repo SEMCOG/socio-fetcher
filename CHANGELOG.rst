@@ -1,8 +1,6 @@
 Change Log
 ==============
-1. finalizing the tool
-    1. make the api easy to use, intuitive, pakeage-ready
-2.  writing test for the tools
+- Data Update Mechanism, keep ALLYEAR as default, explain the updating process in doc
 
 Expected use
 --------------
@@ -19,20 +17,25 @@ Expected use
     from socioFetcher import Downloader
     downloader = Downloader(["BEA", "BLS"], ["26193"], config=myConfig)
     downloader.download()
-    downloader.data # downloaded data
     # summarize
     downloader.sumerize(by="geography")
+    # mapping 
+    data = downloader.data
+    data.show()
     # export
     downloader.export("path/to/save/data",**kwargs)
 
 Todo
 --------------
-- Simplify config api by including us module ???
-    us only include state level info
-- Testing summary.py
+- Add data visualization(map) to visualize downloaded data. In jupyter notebook.
 
 Log
 --------------
+- 07/24 
+    - 🖇Rename Config api variables for better user understanding 
+    - 🖇Remove redundant Config variable 
+    - 🐞Fix a bug which cause produce repetitive record in DataFrame when fetching ACS data
+    - 
 - 07/23 Refactor downloader with request.Session
     - 🖇Refactor downloader using request.Session, improve profermance
 - 07/22 🖇Refactor config.py to include a class to hold all config attributes

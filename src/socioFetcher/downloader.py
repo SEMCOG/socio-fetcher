@@ -438,8 +438,9 @@ class Downloader:
             "DETAIL": []
         }
         for payload in itertools.product(self.config.Census.YEAR,
-                                         [x[2:] for x in self.fipsList],
-                                         [x[:2] for x in self.fipsList]):
+                                         list(set([x[2:]
+                                                   for x in self.fipsList])),
+                                         list(set([x[:2] for x in self.fipsList]))):
             # append subject item id to the end
             subjectList = list(payload)
             detailList = list(payload)
@@ -449,14 +450,3 @@ class Downloader:
             ACSPayloadDict["DETAIL"].append(detailList)
         return ACSPayloadDict
 
-
-# Test
-# dl = Downloader(['BEAGDP'], ["11460"])
-# dl.download()
-# dl.summarize(by="geography")
-# dl.export("/Users/tianxie/Desktop/testFolder")
-
-# dl = Downloader(['BEA'], ["26093"])
-# dl.download()
-# dl.summarize(by="geography")
-# dl.export("/Users/tianxie/Desktop/testFolder")

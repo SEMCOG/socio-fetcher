@@ -130,4 +130,10 @@ class TestDownloader:
         downloader = Downloader(['BEA', 'BLS', 'ACS'], ["26161", "26163"])
         downloader.download()
         downloader.export(tmpdir, summarize=summarize, by=by)
-        assert 1
+        if summarize and by == "geography":
+            assert os.path.exists(os.path.join(tmpdir, "Washtenaw,MI.csv"))
+        elif summarize and by == "dataset":
+            assert os.path.exists(os.path.join(tmpdir, "BEA.csv"))
+        elif not summarize:
+            assert os.path.exists(os.path.join(
+                tmpdir, "Washtenaw,MI", "BEA.csv"))

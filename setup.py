@@ -13,13 +13,21 @@ setup(
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
 
-    install_requires=['pytest', 'pytest-mock', "pandas"],
-    tests_require=['pytest', 'pytest-mock'],
-    #extras_require={'mongo': 'pymongo'},
+    install_requires=[
+        "requests>=2.21.0",
+        'pytest>=5.0.1',
+        "pandas>=0.23.4"
+    ],
+    tests_require=['pytest'],
 
     entry_points={
         'console_scripts': [
             'tasks = tasks.cli:tasks_cli',
         ]
     },
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ]
 )
