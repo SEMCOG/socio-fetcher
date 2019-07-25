@@ -20,8 +20,9 @@ Expected use
     # summarize
     downloader.sumerize(by="geography")
     # mapping 
-    data = downloader.data
-    data.show()
+    geojson = downloader.export_geojson()
+    mapView = downloader.mapping(dataset="BEA")
+    mapView.show()
     # export
     downloader.export("path/to/save/data",**kwargs)
 

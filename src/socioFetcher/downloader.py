@@ -160,6 +160,79 @@ class Downloader:
                 datasetTableDict[datasetName] = datasetTable
             return datasetTableDict
 
+    def export_geojson(self):
+        """
+            Return geojson obj from summarized data by geography
+        Parameters:
+            None
+
+        Returns: 
+            geojson:dict  GeoJSON obj
+        """
+        sum_data = self.summarize(by="geography")
+        geojson = self.get_geojson(self.fipsList, ["GEOID"])
+        return geojson
+
+    def mapping(self):
+        pass
+
+    def get_geojson(self, fipsList, outFields=["GEOID"], geo="county"):
+        """
+            Helper function get geojson from Census TIGER REST API
+        Parameters:
+            fipsList:list   Requested FIPS code list 
+            outFields:list  Fields included in the geojson response
+            geo          Only support County 
+
+        Returns: 
+            geojson:dict  GeoJSON obj
+        """
+        if geo.lower() == 'county':
+            where = ""
+            for i, fips in enumerate(fipsList):
+                where += f"(STATE='{fips[:2]}' AND COUNTY='{fips[2:]}')"
+                if i != len(fipsList)-1:
+                    where += " OR "
+        else:
+            # other geo, census tract, block groups ...
+            pass
+        params = {
+            "where": where,
+            "outFields": ",".join(outFields),
+            "f": "geojson", "text": "",
+            "objectIds": "", "time": "",
+            "geometry": "", "geometryType": "esriGeometryEnvelope",
+            "inSR": "", "spatialRel": "esriSpatialRelIntersects",
+            "relationParam": "", "returnGeometry": True,
+            "returnTrueCurves": False, "maxAllowableOffset": "",
+            "geometryPrecision": "", "outSR": "", "returnIdsOnly": False,
+            "returnCountOnly": False, "orderByFields": "",
+            "groupByFieldsForStatistics": "", "outStatistics": "",
+            "returnZ": False, "returnM": False, "gdbVersion": "",
+            "returnDistinctValues": False, "resultOffset": "",
+            "resultRecordCount": "", "queryByDistance": "",
+            "returnExtentsOnly": False, "datumTransformation": "",
+            "parameterValues": "", "rangeValues": ""
+        }
+        r = requests.get(
+            "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/1/query",
+            params=params
+        )
+        while r.status_code != requests.codes.ok:
+            warnings.warn(
+                f"Request server fail when getting geojson from TIGER with error code {str(p.status_code)}, sleep 10 sec",
+                ResourceWarning)
+            time.sleep(10)
+            r = requests.get(
+                "https://tigerweb.geo.census.gov/arcgis/rest/services/TIGERweb/State_County/MapServer/1/query",
+                params=params
+            )
+        geojson = r.json()
+        # add id
+        for i, feature in enumerate(geojson["features"]):
+            geojson["features"][i]["id"] = geojson["features"][i]["properties"]["GEOID"]
+        return geojson
+
     def downloadBLS(self):
         """
             Download BLS data given configuration from constructor.
@@ -449,4 +522,3 @@ class Downloader:
             ACSPayloadDict["SUBJECT"].append(subjectList)
             ACSPayloadDict["DETAIL"].append(detailList)
         return ACSPayloadDict
-
