@@ -16,7 +16,9 @@ setup(
     install_requires=[
         "requests>=2.21.0",
         'pytest>=5.0.1',
-        "pandas>=0.23.4"
+        "pandas>=0.23.4",
+        "tqdm>=4.32.0",
+        "ipywidgets>=7.5.0"
     ],
     tests_require=['pytest'],
 

@@ -62,7 +62,7 @@ class GeoDataFrame:
                 self.DataFrame = pd.concat([self.DataFrame, parsedData],
                                            axis=1, sort=True)
         elif source.upper() == "ACS" and self.dataset == "ACS":
-            parsedData = self.ACSParser(data, year=year)  # check parser
+            parsedData = self.ACSParser(data, year=year)
             if self.DataFrame.shape[0] == 0:
                 self.DataFrame = parsedData
             else:
@@ -97,7 +97,7 @@ class GeoDataFrame:
         Output: 
             pandas.Series
         """
-        colName = f"{self.county}_avgIncome" if not gdp else f"{self.county}_GDP"
+        colName = "avgIncome" if not gdp else "GDP"
         d = pd.DataFrame(columns=[colName], dtype="float64")
         for dd in data["Data"]:
             d.loc[dd["TimePeriod"], colName] = float(
@@ -115,6 +115,6 @@ class GeoDataFrame:
         Output: 
             pandas.Series
         """
-        d = pd.DataFrame(data[1:], columns=data[0])
+        d = pd.DataFrame(data[1:], columns=data[0], dtype='float')
         d.index = [year]
         return d

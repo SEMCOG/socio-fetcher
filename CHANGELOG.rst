@@ -19,19 +19,24 @@ Expected use
     downloader.download()
     # summarize
     downloader.sumerize(by="geography")
-    # mapping 
-    geojson = downloader.export_geojson()
-    mapView = downloader.mapping(dataset="BEA")
-    mapView.show()
+    # mapping in Jupyter notebook
+    m = downloader.mapping(dataset="BEA")
+    m.show()
     # export
     downloader.export("path/to/save/data",**kwargs)
 
 Todo
 --------------
-- Add data visualization(map) to visualize downloaded data. In jupyter notebook.
+- Finish MapView module, mapping data to the map
 
 Log
 --------------
+- 07/29 Finished and test mapping module. 91% cov
+    - 📝Add year, attr select and data display widget in the map
+    - 📝Add progress bar when downloading data
+    - 🖇Edit test to reflect changes
+- 07/26 📝Add func to produce choro data by attr and year
+- 07/25 📝Add download geojson from Census REST feature, choro map, iteractive map, handling click.
 - 07/24 
     - 🖇Rename Config api variables for better user understanding 
     - 🖇Remove redundant Config variable 

@@ -1,11 +1,14 @@
 import os
 import requests
 import itertools
+from tqdm import tqdm
 import pandas as pd
 import json
 import warnings
-from socioFetcher.geodataframe import GeoDataFrame
+import time
 from socioFetcher.config import Config
+from socioFetcher.geodataframe import GeoDataFrame
+from socioFetcher.mapview import MapView
 
 
 class Downloader:
@@ -26,7 +29,7 @@ class Downloader:
            dataset:List   List of dataset name, value must be
                         must be one of BLS, BEA,BEAGDP, or ACS
            fipsList:List   List of FIPS code
-           data:dict    dict to save downloaded data 
+           data:dict    dict to save downloaded data
            (optional)
            options:dict     Including years, Industries code, table
                         name, subject, detail
@@ -40,7 +43,7 @@ class Downloader:
             raise TypeError(
                 "dataset is not a valid list with more than one element")
         # Check the dataset name inside the allowed range
-        elif not all([True if i in config.Global.ALLOWED_DATASET else False for i in dataset]):
+        elif not all([True if i.upper() in config.Global.ALLOWED_DATASET else False for i in dataset]):
             raise ValueError(
                 "value in dataset is not supported"
             )
@@ -71,7 +74,7 @@ class Downloader:
         Parameters:
             None
 
-        Returns: 
+        Returns:
             None
         """
         for dataset in self.dataset:
@@ -96,7 +99,7 @@ class Downloader:
             summarize:bolean    Save summarized data, default is False
             by:str      Summarize option, one of geography and dataset
 
-        Returns: 
+        Returns:
             None
         """
         if not summarize:
@@ -125,14 +128,14 @@ class Downloader:
     def summarize(self, by="geography"):
         """
             Process downloaded data and produce summrized table by
-        either geography or dataset 
+        either geography or dataset
 
         Parameters:
-            by:str  On which summarize will based on, must be one of 
+            by:str  On which summarize will based on, must be one of
                     geography and dataset
 
-        Returns: 
-            tableDict:dict  
+        Returns:
+            tableDict:dict
                     key: Name of Geography or Name of dataset
                     value: pandas.DataFrame
         """
@@ -160,31 +163,68 @@ class Downloader:
                 datasetTableDict[datasetName] = datasetTable
             return datasetTableDict
 
-    def export_geojson(self):
+    def mapping(self, dataset=None):
         """
-            Return geojson obj from summarized data by geography
+            Mapping the selected downloaded data in form of Interactive map
+        Parameters
+            dataset:str     The name of dataset to be mapped
+
+        Returns:
+            mapView:SocioFetcher.MapView object
+        """
+        geodata = self.get_geojson_from_TIGER(
+            self.fipsList, outFields=["GEOID"], geo="county")
+        choro_data = self.get_choro_data(dataset)
+        mapView = MapView(
+            dataset,
+            geodata,
+            choro_data,
+            {idx: self.config.Global.FIPS_CODE[idx] for idx in self.fipsList}
+        )
+        return mapView
+
+    def get_choro_data(self, dataset):
+        """)
+            Generate choropleth data for mapping use in MapView
+
         Parameters:
-            None
+            dataset:str     The name of the dataset to be ploted in choropleth map
 
-        Returns: 
-            geojson:dict  GeoJSON obj
+        Returns:
+            choro_data:dict {attributeName=>{year=>{areaID=>value}}}
         """
-        sum_data = self.summarize(by="geography")
-        geojson = self.get_geojson(self.fipsList, ["GEOID"])
-        return geojson
+        # self.data => choro_data for given dataset
+        choro_data = {}
+        for areaID, areaDict in tqdm(self.data.items(), desc="Getting Choro data"):
+            areaDatasetDict = areaDict[dataset].DataFrame.to_dict(
+                orient="dict")
+            for attrID, attrdict in areaDatasetDict.items():
+                if dataset.upper() == 'BLS':
+                    attrName = self.config.BLS.NAICS_CODE_LIST[attrID]
+                elif dataset.upper() == 'ACS':
+                    if attrID in self.config.Census.SUBJECT_LIST.keys():
+                        attrName = self.config.Census.SUBJECT_LIST[attrID]
+                    else:
+                        attrName = self.config.Census.DETAIL_LIST[attrID]
+                else:
+                    attrName = attrID
+                if not attrName in choro_data.keys():
+                    choro_data[attrName] = {}
+                for year, data in attrdict.items():
+                    if not year in choro_data[attrName].keys():
+                        choro_data[attrName][year] = {}
+                    choro_data[attrName][year][areaID] = data
+        return choro_data
 
-    def mapping(self):
-        pass
-
-    def get_geojson(self, fipsList, outFields=["GEOID"], geo="county"):
+    def get_geojson_from_TIGER(self, fipsList, outFields=["GEOID"], geo="county"):
         """
-            Helper function get geojson from Census TIGER REST API
+            Get geojson from Census TIGER REST API(Only support county level for now)
         Parameters:
-            fipsList:list   Requested FIPS code list 
+            fipsList:list   Requested FIPS code list
             outFields:list  Fields included in the geojson response
-            geo          Only support County 
+            geo          Only support County
 
-        Returns: 
+        Returns:
             geojson:dict  GeoJSON obj
         """
         if geo.lower() == 'county':
@@ -220,7 +260,7 @@ class Downloader:
         )
         while r.status_code != requests.codes.ok:
             warnings.warn(
-                f"Request server fail when getting geojson from TIGER with error code {str(p.status_code)}, sleep 10 sec",
+                f"Request server fail when getting geojson from TIGER with error code {str(r.status_code)}, sleep 10 sec",
                 ResourceWarning)
             time.sleep(10)
             r = requests.get(
@@ -240,8 +280,8 @@ class Downloader:
         Parameters:
             None
 
-        Returns: 
-            geoClassDict:dict   
+        Returns:
+            geoClassDict:dict
                 key: FIPS:str,
                 value: socioFetcher.GeoDataFrame
         """
@@ -257,7 +297,7 @@ class Downloader:
         # Initialize session and default data
         s = requests.Session()
         s.headers = {'Content-type': 'application/json'}
-        for srsList in seriesListChunk:
+        for srsList in tqdm(seriesListChunk, desc="Download BLS data"):
             data = json.dumps(
                 {"seriesid": srsList,
                  "startyear": self.config.BLS.START_YEAR,
@@ -270,7 +310,7 @@ class Downloader:
                 data=data)
             while r.status_code != requests.codes.ok:
                 warnings.warn(
-                    f"Request server fail with error code {str(p.status_code)}, sleep 10 sec",
+                    f"Request server fail with error code {str(r.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
                 r = s.post(
@@ -279,8 +319,8 @@ class Downloader:
             json_data = r.json()
             for seriesResult in json_data["Results"]["series"]:
                 areaCode = seriesResult["seriesID"][3:8]
-                print("Loading Data for " +
-                      self.config.Global.FIPS_CODE[areaCode])
+                # print("Loading Data for " +
+                #       self.config.Global.FIPS_CODE[areaCode])
                 geoClassDict[areaCode].load(seriesResult)
         return geoClassDict
 
@@ -291,8 +331,8 @@ class Downloader:
         Parameters:
             None
 
-        Returns: 
-            geoClassDict:dict   
+        Returns:
+            geoClassDict:dict
                 key: FIPS:str,
                 value: socioFetcher.GeoDataFrame
         """
@@ -308,7 +348,7 @@ class Downloader:
             "Method": "GetData",
             "datasetname": "Regional"
         }
-        for BEApaylaod in beaPayloadList:
+        for BEApaylaod in tqdm(beaPayloadList, desc="Download BEA"):
             payload = {
                 "GeoFips": BEApaylaod[0],
                 "LineCode": BEApaylaod[1],
@@ -319,14 +359,12 @@ class Downloader:
             r = s.get("https://apps.bea.gov/api/data/")
             while r.status_code != requests.codes.ok:
                 warnings.warn(
-                    f"Request server fail with error code ${str(p.status_code)}, sleep 10 sec",
+                    f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
                 r = s.get("https://apps.bea.gov/api/data/")
             json_data = r.json()
             areaCode = BEApaylaod[0]
-            print("Loading Data for " +
-                  self.config.Global.FIPS_CODE[areaCode])
             geoClassDict[areaCode].load(json_data, source="BEA")
         return geoClassDict
 
@@ -337,8 +375,8 @@ class Downloader:
         Parameters:
             None
 
-        Returns: 
-            geoClassDict:dict   
+        Returns:
+            geoClassDict:dict
                 key: FIPS:str,
                 value: socioFetcher.GeoDataFrame
         """
@@ -354,7 +392,7 @@ class Downloader:
             "Method": "GetData",
             "datasetname": "REGIONALPRODUCT"
         }
-        for BEApaylaod in beaPayloadList:
+        for BEApaylaod in tqdm(beaPayloadList, desc="Download GDP from BEA"):
             payload = {
                 "GeoFips": BEApaylaod[0],
                 "component": BEApaylaod[1],
@@ -365,14 +403,12 @@ class Downloader:
             r = s.get("https://apps.bea.gov/api/data/")
             while r.status_code != requests.codes.ok:
                 warnings.warn(
-                    f"Request server fail with error code ${str(p.status_code)}, sleep 10 sec",
+                    f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
                 r = s.get("https://apps.bea.gov/api/data/")
             json_data = r.json()
             areaCode = BEApaylaod[0]
-            print("Loading Data for " +
-                  self.config.Global.FIPS_CODE[areaCode])
             GDPdataDict[BEApaylaod[0]].load(json_data, source="BEAGDP")
 
         return GDPdataDict
@@ -384,8 +420,8 @@ class Downloader:
         Parameters:
             None
 
-        Returns: 
-            geoClassDict:dict   
+        Returns:
+            geoClassDict:dict
                 key: FIPS:str,
                 value: socioFetcher.GeoDataFrame
         """
@@ -403,7 +439,7 @@ class Downloader:
         s.params = {
             "key": self.config.Census.API_KEY
         }
-        for sbjPay in subjectPayload:
+        for sbjPay in tqdm(subjectPayload, desc="Download ACS Subject Table"):
             getSbjStr = ""
             for att in sbjPay[-1]:
                 getSbjStr += att+","
@@ -417,19 +453,17 @@ class Downloader:
                 f"https://api.census.gov/data/{sbjPay[0]}/acs/acs5/subject")
             while r.status_code != requests.codes.ok:
                 warnings.warn(
-                    f"Request server fail with error code ${str(p.status_code)}, sleep 10 sec",
+                    f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
                 r = s.get(
                     f"https://api.census.gov/data/{sbjPay[0]}/acs/acs5/subject")
             json_data = r.json()
             areaCode = sbjPay[2]+sbjPay[1]
-            print("Loading Data for " +
-                  self.config.Global.FIPS_CODE[areaCode])
             geoClassDict[areaCode].load(
                 json_data, source="ACS", year=sbjPay[0])
 
-        for detPay in detailPayload:
+        for detPay in tqdm(detailPayload, desc="Download ACS Detail Table"):
             getDetStr = ""
             for att in detPay[-1]:
                 getDetStr += att+","
@@ -442,14 +476,12 @@ class Downloader:
                       params=payload)
             while r.status_code != requests.codes.ok:
                 warnings.warn(
-                    f"Request server fail with error code ${str(p.status_code)}, sleep 10 sec",
+                    f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
                 r = s.get(f"https://api.census.gov/data/{detPay[0]}/acs/acs1")
             json_data = r.json()
             areaCode = detPay[2]+detPay[1]
-            print("Loading Data for " +
-                  self.config.Global.FIPS_CODE[areaCode])
             detGeoClassDict[detPay[2]+detPay[1]].load(
                 json_data, source="ACS", year=detPay[0])
         # merge two dicts
@@ -458,6 +490,10 @@ class Downloader:
                 [geoClassDict[key].DataFrame,
                  detGeoClassDict[key].DataFrame],
                 axis=1, sort=True)
+            if "state" in geoClassDict[key].DataFrame.columns:
+                del geoClassDict[key].DataFrame["state"]
+            if "county" in geoClassDict[key].DataFrame.columns:
+                del geoClassDict[key].DataFrame["county"]
 
         return geoClassDict
 
@@ -471,7 +507,7 @@ class Downloader:
                                           self.config.BLS.DATA_TYPE,
                                           self.config.BLS.SIZE,
                                           self.config.BLS.OWNERSHIP,
-                                          self.config.BLS.NAICS_CODE_LIST):
+                                          self.config.BLS.NAICS_CODE_LIST.keys()):
             srid = ""
             for item in sridList:
                 srid += item
@@ -522,3 +558,8 @@ class Downloader:
             ACSPayloadDict["SUBJECT"].append(subjectList)
             ACSPayloadDict["DETAIL"].append(detailList)
         return ACSPayloadDict
+
+
+# downloader = Downloader(['BEA', 'BLS', 'ACS'], ["26161", "26163"])
+# downloader.download()
+# downloader.get_geojson_from_TIGER(["26161", "26163"])

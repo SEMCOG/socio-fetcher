@@ -37,7 +37,9 @@ class BLS:
         self.DATA_TYPE = ["1"]  # All Employees
         self.SIZE = ["0"]       # All size
         self.OWNERSHIP = ["0"]  # All covered
-        self.NAICS_CODE_LIST = ["10"]
+        self.NAICS_CODE_LIST = {
+            "10": "All Industries"
+        }
         # Start and End year of query, eariest year is 2001
         self.START_YEAR = "2001"
         self.END_YEAR = "2018"

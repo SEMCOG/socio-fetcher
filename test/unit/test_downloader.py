@@ -120,15 +120,19 @@ class TestDownloader:
         assert list(data.keys()) == fipsList
         assert list(data[fipsList[0]].keys()) == dataset
 
+    @pytest.fixture()
+    def downloader(self):
+        downloader = Downloader(['BEA', 'BLS', 'ACS'], ["26161", "26163"])
+        downloader.download()
+        return downloader
+
     @pytest.mark.parametrize('summarize, by', [
         (False, "geography"),
         (True, "geography"),
         (False, "dataset"),
         (True, "dataset")
     ])
-    def test_export(self, summarize, by, tmpdir):
-        downloader = Downloader(['BEA', 'BLS', 'ACS'], ["26161", "26163"])
-        downloader.download()
+    def test_export(self, summarize, by, tmpdir, downloader):
         downloader.export(tmpdir, summarize=summarize, by=by)
         if summarize and by == "geography":
             assert os.path.exists(os.path.join(tmpdir, "Washtenaw,MI.csv"))
@@ -137,3 +141,25 @@ class TestDownloader:
         elif not summarize:
             assert os.path.exists(os.path.join(
                 tmpdir, "Washtenaw,MI", "BEA.csv"))
+
+    def test_get_choro_data(self, downloader):
+        choro_data = downloader.get_choro_data("BEA")
+        first_attr = list(choro_data.keys())[0]
+        first_year = list(choro_data[first_attr].keys())[0]
+        assert list(choro_data[first_attr]
+                    [first_year].keys()) == downloader.fipsList
+
+    def test_get_geojson_from_TIGER(self, downloader):
+        fipslist = downloader.fipsList
+        outFields = ['GEOID']
+        geo = 'county'
+        geo_data = downloader.get_geojson_from_TIGER(
+            fipslist, outFields=outFields, geo=geo)
+        assert len(geo_data['features']) == len(fipslist)
+        assert "id" in geo_data['features'][0].keys()
+
+    def test_mapping(self, downloader):
+        mapView = downloader.mapping(dataset="BEA")
+        assert mapView.clickedID == None
+        assert mapView.dataset == 'BEA'
+        assert mapView.show()
