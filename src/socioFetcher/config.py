@@ -27,18 +27,24 @@ class BLS:
         # represent a county.
 
         self.TABLE_NUMBER = ["ENU"]  # QCEW Data
-        self.FIPS_CODE = {"26093": "Livingston,MI",
-                          "26099": "Macomb,MI",
-                          "26115": "Monroe,MI",
-                          "26125": "Oakland,MI",
-                          "26147": "St. Clair,MI",
-                          "26161": "Washtenaw,MI",
-                          "26163": "Wayne,MI"}
         self.DATA_TYPE = ["1"]  # All Employees
         self.SIZE = ["0"]       # All size
-        self.OWNERSHIP = ["0"]  # All covered
+        self.OWNERSHIP = ["5"]  # Private
         self.NAICS_CODE_LIST = {
-            "10": "All Industries"
+            "10":	"10 Total, all industries",
+            "101":	"101 Goods-producing",
+            "1011"	: "1011 Natural resources and mining",
+            "1012"	: "1012 Construction",
+            "1013"	: "1013 Manufacturing",
+            "102"	: "102 Service-providing",
+            "1021"	: "1021 Trade, transportation, and utilities",
+            "1022"	: "1022 Information",
+            "1023"	: "1023 Financial activities",
+            "1024"	: "1024 Professional and business services",
+            "1025"	: "1025 Education and health services",
+            "1026"	: "1026 Leisure and hospitality",
+            "1027"	: "1027 Other services",
+            "1029"	: "1029 Unclassified"
         }
         # Start and End year of query, eariest year is 2001
         self.START_YEAR = "2001"
@@ -48,13 +54,6 @@ class BLS:
 class BEA:
     def __init__(self):
         self.API_KEY = "4040651D-C3D5-4A2F-AEE5-23CD52AF863C"
-        self.GEO_FIPS = {"26093": "Livingston,MI",
-                         "26099": "Macomb,MI",
-                         "26115": "Monroe,MI",
-                         "26125": "Oakland,MI",
-                         "26147": "St. Clair,MI",
-                         "26161": "Washtenaw,MI",
-                         "26163": "Wayne,MI"}
         # Per capita personal income (dollars) 2/
         self.LINE_CODE = ["3"]
         # Personal Income Summary: Personal Income, Population, Per Capita Personal Income
@@ -90,14 +89,6 @@ class Census:
             "C17016_001E": "Total Household",  # only in acs1
             "C17016_002E": "Household Below poverty level"  # only in acs1
         }
-        self.COUNTY_CODE = {"093": "Livingston,MI",
-                            "099": "Macomb,MI",
-                            "115": "Monroe,MI",
-                            "125": "Oakland,MI",
-                            "147": "St. Clair,MI",
-                            "161": "Washtenaw,MI",
-                            "163": "Wayne,MI"}
-        self.STATE_CODE = ["26"]  # MI
 
 
 class Config:

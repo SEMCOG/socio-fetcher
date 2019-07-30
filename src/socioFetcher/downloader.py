@@ -286,7 +286,7 @@ class Downloader:
                 value: socioFetcher.GeoDataFrame
         """
         seriesList = self._getBLSSeriesList()
-        n = 500
+        n = 50  # Chunk size
         seriesListChunk = [seriesList[i*n: (i+1)*n]
                            for i in range((len(seriesList)+n-1)//n)]
         # Creating counties class to hold class
@@ -319,8 +319,6 @@ class Downloader:
             json_data = r.json()
             for seriesResult in json_data["Results"]["series"]:
                 areaCode = seriesResult["seriesID"][3:8]
-                # print("Loading Data for " +
-                #       self.config.Global.FIPS_CODE[areaCode])
                 geoClassDict[areaCode].load(seriesResult)
         return geoClassDict
 
@@ -502,12 +500,16 @@ class Downloader:
             Helper function to Generate Series List form given parameter list
         """
         seriesList = []
-        for sridList in itertools.product(self.config.BLS.TABLE_NUMBER,
-                                          self.fipsList,
-                                          self.config.BLS.DATA_TYPE,
-                                          self.config.BLS.SIZE,
-                                          self.config.BLS.OWNERSHIP,
-                                          self.config.BLS.NAICS_CODE_LIST.keys()):
+        for sridTup in itertools.product(self.config.BLS.TABLE_NUMBER,
+                                         self.fipsList,
+                                         self.config.BLS.DATA_TYPE,
+                                         self.config.BLS.SIZE,
+                                         self.config.BLS.OWNERSHIP,
+                                         self.config.BLS.NAICS_CODE_LIST.keys()):
+            sridList = list(sridTup)
+            if sridList[-1] == "10":
+                # if is Total, change ownership to all
+                sridList[-2] = "0"
             srid = ""
             for item in sridList:
                 srid += item
@@ -558,8 +560,3 @@ class Downloader:
             ACSPayloadDict["SUBJECT"].append(subjectList)
             ACSPayloadDict["DETAIL"].append(detailList)
         return ACSPayloadDict
-
-
-# downloader = Downloader(['BEA', 'BLS', 'ACS'], ["26161", "26163"])
-# downloader.download()
-# downloader.get_geojson_from_TIGER(["26161", "26163"])

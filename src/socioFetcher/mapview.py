@@ -51,7 +51,7 @@ class MapView:
             choro_data.keys())[0]].keys())[-1]
         self.clickedID = None
 
-    def show(self):
+    def show(self, **kwargs):
         """
             Generate and return the map object for displaying the map
         Parameters:
@@ -63,8 +63,7 @@ class MapView:
         self.map = ipyleaflet.Map(
             layers=(ipyleaflet.basemap_to_tiles(
                 ipyleaflet.basemaps.CartoDB.Positron),),
-            center=(42.346814, -83.319304),
-            zoom=8
+            **kwargs
         )
         choro_layer = ipyleaflet.Choropleth(
             name=self.dataset,

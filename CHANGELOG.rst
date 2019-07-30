@@ -12,6 +12,8 @@ Expected use
     myConfig.show() # show current config
     myConfig.Global.areaCode = {...}
     myConfig.BLS.key = "key"
+    myConfig.Census.key = "key"
+    myConfig.BEA.key = "key"
     ...
     # download
     from socioFetcher import Downloader
@@ -27,10 +29,13 @@ Expected use
 
 Todo
 --------------
-- Finish MapView module, mapping data to the map
+- Write doc for the config 
 
 Log
 --------------
+- 07/30 
+    - Improving BLS downloading and bug fixed,
+    - Added and tested MapView module, mapping data to the map
 - 07/29 Finished and test mapping module. 91% cov
     - 📝Add year, attr select and data display widget in the map
     - 📝Add progress bar when downloading data

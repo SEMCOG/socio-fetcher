@@ -50,6 +50,8 @@ class GeoDataFrame:
             parsedData = self.BLSParser(data)
             self.DataFrame = pd.concat([self.DataFrame, parsedData],
                                        axis=1, sort=True)
+            self.DataFrame = self.DataFrame.fillna(method='ffill')
+            self.DataFrame = self.DataFrame.fillna(0)
         elif source.upper() == "BEA" and self.dataset == "BEA":
             parsedData = self.BEAParser(data["BEAAPI"]["Results"])
             self.DataFrame = pd.concat([self.DataFrame, parsedData],
@@ -83,7 +85,11 @@ class GeoDataFrame:
         d = pd.Series(name=naicsCode)
         for dd in data['data']:
             if dd["period"] == "M13":
-                d[dd["year"]] = int(dd["value"].replace(",", ""))
+                try:
+                    d[dd["year"]] = int(dd["value"].replace(",", ""))
+                except:
+                    Warning(f"Unable to parse {dd['value']} in {dd['year']}")
+                    d[dd["year"]] = 0
         return d
 
     def BEAParser(self, data, gdp=False):
