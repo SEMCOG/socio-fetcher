@@ -12,33 +12,44 @@ When change attribute: change choro layer data to show the new attr data
 
 class MapView:
     """
-        A map view class to generate map using ipyleaflet Map and 
+    A map view class to generate map using ipyleaflet Map and 
     ipywidgets.
 
-    Attributes:
-        dataset:str             dataset name used in creating layer
-        geo_data:dict           GeoJSON object with FIPSCode as ID
-        choro_data:dict         {attributeName=>{year=>{areaID=>value}}}
-        fipsLookUp:dict         {fipsCode=>Name}
-        availableYearDict:dict  {attrName=>[available year]}
-        selectedAttr:str        selected attribute name
-        selectedYear:str        selected year
-        clickedID:str           clicked ID
-        map:ipyleaflet.Map      Map object
+    Attributes
+    -----------
+    dataset:str
+        dataset name used in creating layer
+    geo_data:dict
+        geoJSON object with FIPSCode as ID
+    choro_data:dict {attributeName=>{year=>{areaID=>value}}}
+    fipsLookUp:dict {fipsCode=>Name}
+    availableYearDict:dict  {attrName=>[available year]}
+    selectedAttr:str
+        selected attribute name
+    selectedYear:str
+        selected year
+    clickedID:str  
+        clicked ID
+    map:ipyleaflet.Map
+        Map object
     """
 
     def __init__(self, dataset, geo_data, choro_data, fipsLookUp):
         """
-            The constructor for MapView
+        The constructor for MapView
 
-        Parameters:
-            dataset:str     dataset name used in creating layer
-            geo_data:dict   GeoJSON object with FIPSCode as ID
-            choro_data:dict {attributeName=>{year=>{areaID=>value}}}
-            fipsLookUp:dict {fipsCode=>Name}
+        Parameters
+        ----------
+        dataset:str
+            dataset name used in creating layer
+        geo_data:dict
+            GeoJSON object with FIPSCode as ID
+        choro_data:dict {attributeName=>{year=>{areaID=>value}}}
+        fipsLookUp:dict {fipsCode=>Name}
 
-        Returns:
-            None
+        Returns
+        ------------
+        None
         """
         self.dataset = dataset
         self.geo_data = geo_data
@@ -53,11 +64,13 @@ class MapView:
 
     def show(self, **kwargs):
         """
-            Generate and return the map object for displaying the map
-        Parameters:
-            None
+        Generate and return the map object for displaying the map
+        Parameters
+        -----------
+        None
 
-        Returns:
+        Returns
+        ----------
             map:ipyleaflet.Map
         """
         self.map = ipyleaflet.Map(
@@ -78,8 +91,6 @@ class MapView:
         )
 
         def handle_click(**kwargs):
-            # chron.style = {'opacity': 1, 'weight': 1.9,
-            #                'dashArray': '9', 'fillOpacity': 1}
             if kwargs['event'] == 'click':
                 clickedFips = kwargs['properties']['GEOID']
                 clickedName = self.fipsLookUp[clickedFips]

@@ -5,6 +5,18 @@
 
 
 class Global:
+    """
+    Class to hold all Global settings for the downloader
+
+    Attributes
+    ----------
+    ALLOWED_DATASET : list of str
+        Allowed dataset options supported by this library
+    FIPS_CODE : dict  {fipsCode=>Name}
+        Python dictionary with fips code as key and name
+        as values
+    """
+
     def __init__(self):
         self.ALLOWED_DATASET = ["BLS", "BEA", "BEAGDP", "ACS"]
         self.FIPS_CODE = {"26093": "Livingston,MI",
@@ -20,6 +32,29 @@ class Global:
 
 
 class BLS:
+    """
+    Class to hold all BLS settings for the downloader
+
+    Attributes
+    ----------
+    API_KEY : str, required
+        API key for BLS api
+    TABLE_NUMBER : list of str
+        Table number list to download
+    NAICS_CODE_LIST : dict  {naics_code=>naics_name}
+        The naics code to download from BLS
+    DATA_TYPE : list of str
+        Data type to download
+    SIZE : list of str
+        Size category to download
+    OWNERSHIP : list of str
+        Ownership type to download
+    START_YEAR : str
+        Start year of the query 
+    END_YEAR : str
+        End year of the query
+    """
+
     def __init__(self):
         self.API_KEY = "5a0e1a49d56d402d8331feac501593dd"
 
@@ -52,6 +87,29 @@ class BLS:
 
 
 class BEA:
+    """
+    Class to hold all BEA settings for the downloader
+
+    Attributes
+    ----------
+    API_KEY : str, required
+        API key for BEA api
+    LINE_CODE : list of str
+        Line Code list to download, defalt is ["3"]
+    TABLE_NAME : list of str
+        Table name to download, default is ["CAINC1"]
+    YEAR : list of str
+        Years to download, default is ["ALL"]
+    GDP_METRO_CODE : dict {metroFipsCode=>metroName}
+        Metro fips code to download (GDP data only)
+    GDP_COMPONENT : list of str
+        GDP component attribute, default is ["RGDP_MAN"]
+    GDP_INDUSTRY : list of str
+        Industry code to download, default is ["1"] (total)
+    GDP_YEAR : list of str
+        Year to download for GDP data, default is ["ALL"]
+    """
+
     def __init__(self):
         self.API_KEY = "4040651D-C3D5-4A2F-AEE5-23CD52AF863C"
         # Per capita personal income (dollars) 2/
@@ -71,6 +129,33 @@ class BEA:
 
 
 class Census:
+    """
+    Class to hold all ACS(Census) settings for the downloader
+
+    Attributes
+    ----------
+    API_KEY : str, required
+        API key for ACS(Census) api
+    YEAR : list of str
+        Year list to download ACS data, defualt is ["2010", "2011", "2012",
+        "2013", "2014", "2015", "2016", "2017"]
+    SUBJECT_LIST : dict  {SUBJECT_ID=>SUBJECT_NAME}
+        Subject id list to download, default is {
+            # only available in ACS5
+            "S0102_C01_036E": "Some college or associate's degree",
+            # only available in ACS5
+            "S0102_C01_037E": "Bachelor's degree or higher",
+            "S0101_C01_001E": "Total population",
+            "S0102_C01_087E": "Under proverty line",  # only available in ACS5
+        }
+    DETAIL_LIST : dict  {Detail_ID=>Detail_NAME}
+        Detail id list to download, default is {
+            "C17016_001E": "Total Household",  # only in acs1
+            "C17016_002E": "Household Below poverty level"  # only in acs1
+        }
+
+    """
+
     def __init__(self):
         self.API_KEY = "a1b79f5105b689bd9c4ed357de83130393b6dec7"
         self.YEAR = ["2010", "2011", "2012",
@@ -92,6 +177,17 @@ class Census:
 
 
 class Config:
+    """
+    Class to hold all ACS(Census) settings for the downloader
+
+    Attributes
+    ----------
+    Global : socioFetcher.config.Global
+    BLS : socioFetcher.config.BLS
+    BEA : socioFetcher.config.BEA
+    Census : socioFetcher.config.Census
+    """
+
     def __init__(self):
         self.Global = Global()
         self.BLS = BLS()

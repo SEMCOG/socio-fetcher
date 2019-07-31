@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python">
+  <head>
+    <meta charset="utf-8" />
+    <title>GeoDataFrame &#8212; socioFetcher 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="geodataframe">
+<h1>GeoDataFrame<a class="headerlink" href="#geodataframe" title="Permalink to this headline">¶</a></h1>
+<p>GeoDataFrame Class module</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.geodataframe.GeoDataFrame" title="socioFetcher.geodataframe.GeoDataFrame"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GeoDataFrame</span></code></a>(county[, dataset])</p></td>
+<td><p>A class to store data about specific geography, it</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="module-socioFetcher.geodataframe">
+<span id="api-docs"></span><h2>API Docs<a class="headerlink" href="#module-socioFetcher.geodataframe" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="socioFetcher.geodataframe.GeoDataFrame">
+<em class="property">class </em><code class="sig-prename descclassname">socioFetcher.geodataframe.</code><code class="sig-name descname">GeoDataFrame</code><span class="sig-paren">(</span><em class="sig-param">county</em>, <em class="sig-param">dataset='BLS'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/geodataframe.html#GeoDataFrame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.geodataframe.GeoDataFrame" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>A class to store data about specific geography, it</p>
+</div></blockquote>
+<p>can load, parse and export data fetched from APIs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Attributes</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>county:str</strong></dt><dd><p>The real part of complex number.</p>
+</dd>
+<dt><strong>dataset:str</strong></dt><dd><p>The imaginary part of complex number.</p>
+</dd>
+<dt><strong>DataFrame:pandas.DataFrame</strong></dt><dd><p>DataFrame to store county data</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.geodataframe.GeoDataFrame.ACSParser" title="socioFetcher.geodataframe.GeoDataFrame.ACSParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ACSParser</span></code></a>(self, data[, year])</p></td>
+<td><p>Generate Pandas Series from given JSON data, dict, from ACS</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#socioFetcher.geodataframe.GeoDataFrame.BEAParser" title="socioFetcher.geodataframe.GeoDataFrame.BEAParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BEAParser</span></code></a>(self, data[, gdp])</p></td>
+<td><p>Generate Pandas Series from given JSON data, dict, from BEA</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.geodataframe.GeoDataFrame.BLSParser" title="socioFetcher.geodataframe.GeoDataFrame.BLSParser"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BLSParser</span></code></a>(self, data)</p></td>
+<td><p>Generate Pandas Series from given JSON data, dict, from BLS</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#socioFetcher.geodataframe.GeoDataFrame.load" title="socioFetcher.geodataframe.GeoDataFrame.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(self, data[, source, year])</p></td>
+<td><p>Load dict data response from API, and update</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="socioFetcher.geodataframe.GeoDataFrame.ACSParser">
+<code class="sig-name descname">ACSParser</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">data</em>, <em class="sig-param">year=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/geodataframe.html#GeoDataFrame.ACSParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.geodataframe.GeoDataFrame.ACSParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate Pandas Series from given JSON data, dict, from ACS</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data:dict</strong></dt><dd><p>BLS JSON data</p>
+</dd>
+<dt><strong>year:str</strong></dt><dd><p>Year of the ACS data</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="socioFetcher.geodataframe.GeoDataFrame.BEAParser">
+<code class="sig-name descname">BEAParser</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">data</em>, <em class="sig-param">gdp=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/geodataframe.html#GeoDataFrame.BEAParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.geodataframe.GeoDataFrame.BEAParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate Pandas Series from given JSON data, dict, from BEA</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data:dict</strong></dt><dd><p>BLS JSON data</p>
+</dd>
+<dt><strong>gdp:bolean</strong></dt><dd><p>Parse GDP data, default is False</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="socioFetcher.geodataframe.GeoDataFrame.BLSParser">
+<code class="sig-name descname">BLSParser</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/geodataframe.html#GeoDataFrame.BLSParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.geodataframe.GeoDataFrame.BLSParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate Pandas Series from given JSON data, dict, from BLS</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data:dict</strong></dt><dd><p>BLS JSON data</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="socioFetcher.geodataframe.GeoDataFrame.load">
+<code class="sig-name descname">load</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">data</em>, <em class="sig-param">source='BLS'</em>, <em class="sig-param">year=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/geodataframe.html#GeoDataFrame.load"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.geodataframe.GeoDataFrame.load" title="Permalink to this definition">¶</a></dt>
+<dd><blockquote>
+<div><p>Load dict data response from API, and update</p>
+</div></blockquote>
+<p>countyData</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data:str</strong></dt><dd><p>JSON object, dict</p>
+</dd>
+<dt><strong>source:str</strong></dt><dd><p>one of &quot;BLS&quot;, &quot;BEA&quot;, and &quot;Census&quot;</p>
+</dd>
+<dt><strong>year:str</strong></dt><dd><p>used in constructing ACS table</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>None</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">socioFetcher</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, SEMCOG.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Reference/GeoDataFrame.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

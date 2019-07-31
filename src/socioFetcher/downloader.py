@@ -13,27 +13,24 @@ from socioFetcher.mapview import MapView
 
 class Downloader:
     """
-        A downloader to download data for Census Geography
+    A downloader to download data for Census Geography
      given configration from BLS, BEA, or Census.
 
-    Attributes:
-        dataset:List    dataset name list for download use
-        fipsList:List   FIPS list for download use
+    Attributes
+    ----------
+    dataset : List   
+        List of dataset name, value must be
+        must be one of BLS, BEA,BEAGDP, or ACS
+    fipsList : List   
+        List of FIPS code
+    data : dict   
+        dict to save downloaded data
+    options : dict, optional
+        Including years, Industries code, table
+        name, subject, detail
     """
 
     def __init__(self, dataset, fipsList, config=Config()):
-        """
-            The constructor for Downloader class
-
-        Parameters:
-           dataset:List   List of dataset name, value must be
-                        must be one of BLS, BEA,BEAGDP, or ACS
-           fipsList:List   List of FIPS code
-           data:dict    dict to save downloaded data
-           (optional)
-           options:dict     Including years, Industries code, table
-                        name, subject, detail
-        """
         # value checking
         if config and not isinstance(config, Config):
             raise TypeError(
@@ -68,13 +65,15 @@ class Downloader:
 
     def download(self):
         """
-            Download data and save to self.data given configuration from
+        Download data and save to self.data given configuration from
         constructor.
 
-        Parameters:
+        Parameters
+        ----------
             None
 
-        Returns:
+        Returns
+        ----------
             None
         """
         for dataset in self.dataset:
@@ -91,17 +90,23 @@ class Downloader:
 
     def export(self, path, summarize=False, by="geography"):
         """
-            Save downloaded data to specified path
+        Save downloaded data to specified path
 
-        Parameters:
-            path:str    Abosolute path to a folder where files will be saved
-            (optional)
-            summarize:bolean    Save summarized data, default is False
-            by:str      Summarize option, one of geography and dataset
+        Parameters
+        ----------
+        path:str
+            Abosolute path to a folder where files will be saved
+        summarize:bolean, optional
+            Save summarized data, default is False
+        by:str
+            Summarize option, one of geography and dataset
 
-        Returns:
+        Returns
+        ----------
             None
         """
+        if not os.path.exists(path):
+            os.mkdir(path)
         if not summarize:
             for areaID, obj in self.data.items():
                 areaName = self.config.Global.FIPS_CODE[areaID]
@@ -127,17 +132,20 @@ class Downloader:
 
     def summarize(self, by="geography"):
         """
-            Process downloaded data and produce summrized table by
+        Process downloaded data and produce summrized table by
         either geography or dataset
 
-        Parameters:
-            by:str  On which summarize will based on, must be one of
-                    geography and dataset
+        Parameters
+        ------------
+        by:str  
+            On which summarize will based on, must be one of
+            geography and dataset
 
-        Returns:
-            tableDict:dict
-                    key: Name of Geography or Name of dataset
-                    value: pandas.DataFrame
+        Returns
+        ------------
+        tableDict:dict
+            key: Name of Geography or Name of dataset
+            value: pandas.DataFrame
         """
         if by.lower() == "geography":
             areaTableDict = {}
@@ -165,12 +173,15 @@ class Downloader:
 
     def mapping(self, dataset=None):
         """
-            Mapping the selected downloaded data in form of Interactive map
+        Mapping the selected downloaded data in form of Interactive map
         Parameters
-            dataset:str     The name of dataset to be mapped
+        -----------
+        dataset:str 
+            The name of dataset to be mapped
 
-        Returns:
-            mapView:SocioFetcher.MapView object
+        Returns
+        -----------
+        mapView:SocioFetcher.MapView
         """
         geodata = self.get_geojson_from_TIGER(
             self.fipsList, outFields=["GEOID"], geo="county")
@@ -184,14 +195,17 @@ class Downloader:
         return mapView
 
     def get_choro_data(self, dataset):
-        """)
-            Generate choropleth data for mapping use in MapView
+        """
+        Generate choropleth data for mapping use in MapView
 
-        Parameters:
-            dataset:str     The name of the dataset to be ploted in choropleth map
+        Parameters
+        ----------
+        dataset:str
+            The name of the dataset to be ploted in choropleth map
 
-        Returns:
-            choro_data:dict {attributeName=>{year=>{areaID=>value}}}
+        Returns
+        ----------
+        choro_data:dict {attributeName=>{year=>{areaID=>value}}}
         """
         # self.data => choro_data for given dataset
         choro_data = {}
@@ -218,14 +232,21 @@ class Downloader:
 
     def get_geojson_from_TIGER(self, fipsList, outFields=["GEOID"], geo="county"):
         """
-            Get geojson from Census TIGER REST API(Only support county level for now)
-        Parameters:
-            fipsList:list   Requested FIPS code list
-            outFields:list  Fields included in the geojson response
-            geo          Only support County
+        Get geojson from Census TIGER REST API(Only support county level for now)
 
-        Returns:
-            geojson:dict  GeoJSON obj
+        Parameters
+        ------------
+        fipsList:list of str
+            Requested FIPS code list
+        outFields:list
+            Fields included in the geojson response, default is ["GEOID"]
+        geo : str
+            default is "county", (Only support County)
+
+        Returns
+        -----------
+        geojson:dict
+            GeoJSON obj
         """
         if geo.lower() == 'county':
             where = ""
@@ -275,15 +296,17 @@ class Downloader:
 
     def downloadBLS(self):
         """
-            Download BLS data given configuration from constructor.
+        Download BLS data given configuration from constructor.
 
-        Parameters:
+        Parameters
+        ----------
             None
 
-        Returns:
-            geoClassDict:dict
-                key: FIPS:str,
-                value: socioFetcher.GeoDataFrame
+        Returns
+        ----------
+        geoClassDict:dict
+            key: FIPS:str,
+            value: socioFetcher.GeoDataFrame
         """
         seriesList = self._getBLSSeriesList()
         n = 50  # Chunk size
@@ -324,15 +347,17 @@ class Downloader:
 
     def downloadBEAIncome(self):
         """
-            Download BEA data given configuration from constructor.
+        Download BEA data given configuration from constructor.
 
-        Parameters:
+        Parameters
+        -----------
             None
 
-        Returns:
-            geoClassDict:dict
-                key: FIPS:str,
-                value: socioFetcher.GeoDataFrame
+        Returns
+        -----------
+        geoClassDict:dict
+            key: FIPS:str,
+            value: socioFetcher.GeoDataFrame
         """
         geoClassDict = {}
         for areaID in self.fipsList:
@@ -368,15 +393,17 @@ class Downloader:
 
     def downloadBEAGDP(self):
         """
-            Download BEAGDP data given configuration from constructor.
+        Download BEAGDP data given configuration from constructor.
 
-        Parameters:
+        Parameters
+        ----------
             None
 
-        Returns:
-            geoClassDict:dict
-                key: FIPS:str,
-                value: socioFetcher.GeoDataFrame
+        Returns
+        ----------
+        geoClassDict:dict
+            key: FIPS:str,
+            value: socioFetcher.GeoDataFrame
         """
         GDPdataDict = {}
         for areaID in self.fipsList:
@@ -413,15 +440,17 @@ class Downloader:
 
     def downloadACS(self):
         """
-            Download ACS data given configuration from constructor.
+        Download ACS data given configuration from constructor.
 
-        Parameters:
+        Parameters
+        ----------
             None
 
-        Returns:
-            geoClassDict:dict
-                key: FIPS:str,
-                value: socioFetcher.GeoDataFrame
+        Returns
+        -----------
+        geoClassDict:dict
+            key: FIPS:str,
+            value: socioFetcher.GeoDataFrame
         """
         geoClassDict = {}
         detGeoClassDict = {}
@@ -497,7 +526,7 @@ class Downloader:
 
     def _getBLSSeriesList(self):
         """
-            Helper function to Generate Series List form given parameter list
+        Helper function to Generate Series List form given parameter list
         """
         seriesList = []
         for sridTup in itertools.product(self.config.BLS.TABLE_NUMBER,
@@ -518,7 +547,7 @@ class Downloader:
 
     def _getBEAIncomePayload(self):
         """
-            Helper function to Generate Series List form given parameter list
+        Helper function to Generate Series List form given parameter list
         """
         BEApayloadList = []
         for payload in itertools.product(self.fipsList,
@@ -530,7 +559,7 @@ class Downloader:
 
     def _getBEAGDPPayload(self):
         """
-            Helper function to Generate Series List form given parameter list
+        Helper function to Generate Series List form given parameter list
         """
         BEApayloadList = []
         for payload in itertools.product(self.fipsList,
@@ -542,7 +571,7 @@ class Downloader:
 
     def _getACSPayload(self):
         """
-            Helper function to Generate Series List form given parameter list
+        Helper function to Generate Series List form given parameter list
         """
         ACSPayloadDict = {
             "SUBJECT": [],

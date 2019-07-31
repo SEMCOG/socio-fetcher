@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python">
+  <head>
+    <meta charset="utf-8" />
+    <title>socioFetcher.config &#8212; socioFetcher 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for socioFetcher.config</h1><div class="highlight"><pre>
+<span></span><span class="c1"># ==========================================</span>
+<span class="c1">#</span>
+<span class="c1">#   Configration</span>
+<span class="c1"># ==========================================</span>
+
+
+<div class="viewcode-block" id="Global"><a class="viewcode-back" href="../../Config.html#socioFetcher.config.Global">[docs]</a><span class="k">class</span> <span class="nc">Global</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to hold all Global settings for the downloader</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ALLOWED_DATASET : list of str</span>
+<span class="sd">        Allowed dataset options supported by this library</span>
+<span class="sd">    FIPS_CODE : dict  {fipsCode=&gt;Name}</span>
+<span class="sd">        Python dictionary with fips code as key and name</span>
+<span class="sd">        as values</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ALLOWED_DATASET</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;BLS&quot;</span><span class="p">,</span> <span class="s2">&quot;BEA&quot;</span><span class="p">,</span> <span class="s2">&quot;BEAGDP&quot;</span><span class="p">,</span> <span class="s2">&quot;ACS&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">FIPS_CODE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;26093&quot;</span><span class="p">:</span> <span class="s2">&quot;Livingston,MI&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;26099&quot;</span><span class="p">:</span> <span class="s2">&quot;Macomb,MI&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;26115&quot;</span><span class="p">:</span> <span class="s2">&quot;Monroe,MI&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;26125&quot;</span><span class="p">:</span> <span class="s2">&quot;Oakland,MI&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;26147&quot;</span><span class="p">:</span> <span class="s2">&quot;St. Clair,MI&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;26161&quot;</span><span class="p">:</span> <span class="s2">&quot;Washtenaw,MI&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;26163&quot;</span><span class="p">:</span> <span class="s2">&quot;Wayne,MI&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;11460&quot;</span><span class="p">:</span> <span class="s2">&quot;Ann Arbor Metro&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;19820&quot;</span><span class="p">:</span> <span class="s2">&quot;Detroit Metro&quot;</span><span class="p">,</span>
+                          <span class="s2">&quot;33780&quot;</span><span class="p">:</span> <span class="s2">&quot;Monroe Metro&quot;</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="BLS"><a class="viewcode-back" href="../../Config.html#socioFetcher.config.BLS">[docs]</a><span class="k">class</span> <span class="nc">BLS</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to hold all BLS settings for the downloader</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    API_KEY : str, required</span>
+<span class="sd">        API key for BLS api</span>
+<span class="sd">    TABLE_NUMBER : list of str</span>
+<span class="sd">        Table number list to download</span>
+<span class="sd">    NAICS_CODE_LIST : dict  {naics_code=&gt;naics_name}</span>
+<span class="sd">        The naics code to download from BLS</span>
+<span class="sd">    DATA_TYPE : list of str</span>
+<span class="sd">        Data type to download</span>
+<span class="sd">    SIZE : list of str</span>
+<span class="sd">        Size category to download</span>
+<span class="sd">    OWNERSHIP : list of str</span>
+<span class="sd">        Ownership type to download</span>
+<span class="sd">    START_YEAR : str</span>
+<span class="sd">        Start year of the query </span>
+<span class="sd">    END_YEAR : str</span>
+<span class="sd">        End year of the query</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;5a0e1a49d56d402d8331feac501593dd&quot;</span>
+
+        <span class="c1"># BLS Series ID List, https://data.bls.gov/, each</span>
+        <span class="c1"># represent a county.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">TABLE_NUMBER</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ENU&quot;</span><span class="p">]</span>  <span class="c1"># QCEW Data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DATA_TYPE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span>  <span class="c1"># All Employees</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SIZE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span>       <span class="c1"># All size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">OWNERSHIP</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;5&quot;</span><span class="p">]</span>  <span class="c1"># Private</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NAICS_CODE_LIST</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;10&quot;</span><span class="p">:</span>	<span class="s2">&quot;10 Total, all industries&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;101&quot;</span><span class="p">:</span>	<span class="s2">&quot;101 Goods-producing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1011&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1011 Natural resources and mining&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1012&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1012 Construction&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1013&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1013 Manufacturing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;102&quot;</span>	<span class="p">:</span> <span class="s2">&quot;102 Service-providing&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1021&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1021 Trade, transportation, and utilities&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1022&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1022 Information&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1023&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1023 Financial activities&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1024&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1024 Professional and business services&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1025&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1025 Education and health services&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1026&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1026 Leisure and hospitality&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1027&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1027 Other services&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;1029&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1029 Unclassified&quot;</span>
+        <span class="p">}</span>
+        <span class="c1"># Start and End year of query, eariest year is 2001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">START_YEAR</span> <span class="o">=</span> <span class="s2">&quot;2001&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">END_YEAR</span> <span class="o">=</span> <span class="s2">&quot;2018&quot;</span></div>
+
+
+<div class="viewcode-block" id="BEA"><a class="viewcode-back" href="../../Config.html#socioFetcher.config.BEA">[docs]</a><span class="k">class</span> <span class="nc">BEA</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to hold all BEA settings for the downloader</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    API_KEY : str, required</span>
+<span class="sd">        API key for BEA api</span>
+<span class="sd">    LINE_CODE : list of str</span>
+<span class="sd">        Line Code list to download, defalt is [&quot;3&quot;]</span>
+<span class="sd">    TABLE_NAME : list of str</span>
+<span class="sd">        Table name to download, default is [&quot;CAINC1&quot;]</span>
+<span class="sd">    YEAR : list of str</span>
+<span class="sd">        Years to download, default is [&quot;ALL&quot;]</span>
+<span class="sd">    GDP_METRO_CODE : dict {metroFipsCode=&gt;metroName}</span>
+<span class="sd">        Metro fips code to download (GDP data only)</span>
+<span class="sd">    GDP_COMPONENT : list of str</span>
+<span class="sd">        GDP component attribute, default is [&quot;RGDP_MAN&quot;]</span>
+<span class="sd">    GDP_INDUSTRY : list of str</span>
+<span class="sd">        Industry code to download, default is [&quot;1&quot;] (total)</span>
+<span class="sd">    GDP_YEAR : list of str</span>
+<span class="sd">        Year to download for GDP data, default is [&quot;ALL&quot;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;4040651D-C3D5-4A2F-AEE5-23CD52AF863C&quot;</span>
+        <span class="c1"># Per capita personal income (dollars) 2/</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LINE_CODE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;3&quot;</span><span class="p">]</span>
+        <span class="c1"># Personal Income Summary: Personal Income, Population, Per Capita Personal Income</span>
+        <span class="c1"># https://apps.bea.gov/api/data/?&amp;UserID=4040651D-C3D5-4A2F-AEE5-23CD52AF863C&amp;method=getparametervalues&amp;datasetname=Regionalproduct&amp;parametername=industryid&amp;dataformat=xml</span>
+        <span class="c1"># Personal Income Summary: Personal Income, Population, Per Capita Personal Income (Non-Industry)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">TABLE_NAME</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CAINC1&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">YEAR</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ALL&quot;</span><span class="p">]</span>              <span class="c1"># All year</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">GDP_METRO_CODE</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;11460&quot;</span><span class="p">:</span> <span class="s2">&quot;Ann Arbor Metro&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;19820&quot;</span><span class="p">:</span> <span class="s2">&quot;Detroit Metro&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;33780&quot;</span><span class="p">:</span> <span class="s2">&quot;Monroe Metro&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">GDP_COMPONENT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RGDP_MAN&quot;</span><span class="p">]</span>  <span class="c1"># Real GDP by metro</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">GDP_INDUSTRY</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span>        <span class="c1"># total</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">GDP_YEAR</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ALL&quot;</span><span class="p">]</span>          <span class="c1"># all year</span></div>
+
+
+<div class="viewcode-block" id="Census"><a class="viewcode-back" href="../../Config.html#socioFetcher.config.Census">[docs]</a><span class="k">class</span> <span class="nc">Census</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to hold all ACS(Census) settings for the downloader</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    API_KEY : str, required</span>
+<span class="sd">        API key for ACS(Census) api</span>
+<span class="sd">    YEAR : list of str</span>
+<span class="sd">        Year list to download ACS data, defualt is [&quot;2010&quot;, &quot;2011&quot;, &quot;2012&quot;,</span>
+<span class="sd">        &quot;2013&quot;, &quot;2014&quot;, &quot;2015&quot;, &quot;2016&quot;, &quot;2017&quot;]</span>
+<span class="sd">    SUBJECT_LIST : dict  {SUBJECT_ID=&gt;SUBJECT_NAME}</span>
+<span class="sd">        Subject id list to download, default is {</span>
+<span class="sd">            # only available in ACS5</span>
+<span class="sd">            &quot;S0102_C01_036E&quot;: &quot;Some college or associate&#39;s degree&quot;,</span>
+<span class="sd">            # only available in ACS5</span>
+<span class="sd">            &quot;S0102_C01_037E&quot;: &quot;Bachelor&#39;s degree or higher&quot;,</span>
+<span class="sd">            &quot;S0101_C01_001E&quot;: &quot;Total population&quot;,</span>
+<span class="sd">            &quot;S0102_C01_087E&quot;: &quot;Under proverty line&quot;,  # only available in ACS5</span>
+<span class="sd">        }</span>
+<span class="sd">    DETAIL_LIST : dict  {Detail_ID=&gt;Detail_NAME}</span>
+<span class="sd">        Detail id list to download, default is {</span>
+<span class="sd">            &quot;C17016_001E&quot;: &quot;Total Household&quot;,  # only in acs1</span>
+<span class="sd">            &quot;C17016_002E&quot;: &quot;Household Below poverty level&quot;  # only in acs1</span>
+<span class="sd">        }</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;a1b79f5105b689bd9c4ed357de83130393b6dec7&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">YEAR</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;2010&quot;</span><span class="p">,</span> <span class="s2">&quot;2011&quot;</span><span class="p">,</span> <span class="s2">&quot;2012&quot;</span><span class="p">,</span>
+                     <span class="s2">&quot;2013&quot;</span><span class="p">,</span> <span class="s2">&quot;2014&quot;</span><span class="p">,</span> <span class="s2">&quot;2015&quot;</span><span class="p">,</span> <span class="s2">&quot;2016&quot;</span><span class="p">,</span> <span class="s2">&quot;2017&quot;</span><span class="p">]</span>
+        <span class="c1"># Subject url: https://api.census.gov/data/2017/acs/acs1/subject</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SUBJECT_LIST</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="c1"># only available in ACS5</span>
+            <span class="s2">&quot;S0102_C01_036E&quot;</span><span class="p">:</span> <span class="s2">&quot;Some college or associate&#39;s degree&quot;</span><span class="p">,</span>
+            <span class="c1"># only available in ACS5</span>
+            <span class="s2">&quot;S0102_C01_037E&quot;</span><span class="p">:</span> <span class="s2">&quot;Bachelor&#39;s degree or higher&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;S0101_C01_001E&quot;</span><span class="p">:</span> <span class="s2">&quot;Total population&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;S0102_C01_087E&quot;</span><span class="p">:</span> <span class="s2">&quot;Under proverty line&quot;</span><span class="p">,</span>  <span class="c1"># only available in ACS5</span>
+        <span class="p">}</span>
+        <span class="c1"># Detail url: https://api.census.gov/data/2017/acs/acs1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">DETAIL_LIST</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;C17016_001E&quot;</span><span class="p">:</span> <span class="s2">&quot;Total Household&quot;</span><span class="p">,</span>  <span class="c1"># only in acs1</span>
+            <span class="s2">&quot;C17016_002E&quot;</span><span class="p">:</span> <span class="s2">&quot;Household Below poverty level&quot;</span>  <span class="c1"># only in acs1</span>
+        <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../Config.html#socioFetcher.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to hold all ACS(Census) settings for the downloader</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Global : socioFetcher.config.Global</span>
+<span class="sd">    BLS : socioFetcher.config.BLS</span>
+<span class="sd">    BEA : socioFetcher.config.BEA</span>
+<span class="sd">    Census : socioFetcher.config.Census</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Global</span> <span class="o">=</span> <span class="n">Global</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BLS</span> <span class="o">=</span> <span class="n">BLS</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">BEA</span> <span class="o">=</span> <span class="n">BEA</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Census</span> <span class="o">=</span> <span class="n">Census</span><span class="p">()</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">socioFetcher</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Config.html">Config</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Downloader.html">Downloader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../GeoDataFrame.html">GeoDataFrame</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../MapView.html">MapView</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, SEMCOG.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

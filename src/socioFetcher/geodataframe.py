@@ -7,21 +7,27 @@ class GeoDataFrame:
         A class to store data about specific geography, it
     can load, parse and export data fetched from APIs.
 
-    Attributes: 
-        county:str  The real part of complex number. 
-        dataset:str  The imaginary part of complex number. 
-        DataFrame:pandas.DataFrame    
-                            DataFrame to store county data
+    Attributes
+    -----------
+    county:str
+        The real part of complex number. 
+    dataset:str
+        The imaginary part of complex number. 
+    DataFrame:pandas.DataFrame    
+        DataFrame to store county data
     """
 
     def __init__(self, county, dataset="BLS"):
         """ 
             The constructor for GeoDataFrame class. 
 
-        Parameters: 
-           county:str   County Name 
-           dataset:str   dataset type, must be one of BLS, BEA, 
-                            BEAGDP, or ACS 
+        Parameters
+        ----------
+        county:str
+            County Name 
+        dataset:str
+            dataset type, must be one of BLS, BEA, 
+                        BEAGDP, or ACS 
         """
         self.county = county
         self.dataset = dataset
@@ -37,12 +43,17 @@ class GeoDataFrame:
             Load dict data response from API, and update 
         countyData
 
-        Parameters:
-            data:str   JSON object, dict
-            source:str   one of "BLS", "BEA", and "Census"
-            year:str   used in constructing ACS table
+        Parameters
+        ----------
+        data:str
+           JSON object, dict
+        source:str
+           one of "BLS", "BEA", and "Census"
+        year:str
+           used in constructing ACS table
 
-        Returns: 
+        Returns
+        ----------
             None
         """
         if source.upper() == "BLS" and self.dataset == "BLS":
@@ -76,10 +87,13 @@ class GeoDataFrame:
         Generate Pandas Series from given JSON data, dict, from BLS
 
         Parameters
-            data:dict   BLS JSON data
+        ------------
+        data:dict
+            BLS JSON data
 
-        Output: 
-            pandas.Series
+        Output
+        ------------
+        pandas.Series
         """
         naicsCode = data["seriesID"][11:]  # NAICS code start at 12
         d = pd.Series(name=naicsCode)
@@ -97,11 +111,15 @@ class GeoDataFrame:
         Generate Pandas Series from given JSON data, dict, from BEA
 
         Parameters
-            data:dict   BLS JSON data
-            gdp:bolean  Parse GDP data, default is False
+        ----------
+        data:dict
+            BLS JSON data
+        gdp:bolean
+            Parse GDP data, default is False
 
-        Output: 
-            pandas.Series
+        Output
+        ----------
+        pandas.Series
         """
         colName = "avgIncome" if not gdp else "GDP"
         d = pd.DataFrame(columns=[colName], dtype="float64")
@@ -115,10 +133,14 @@ class GeoDataFrame:
         Generate Pandas Series from given JSON data, dict, from ACS
 
         Parameters
-            data:dict   BLS JSON data
-            year:str    Year of the ACS data
+        -----------
+        data:dict
+            BLS JSON data
+        year:str
+            Year of the ACS data
 
-        Output: 
+        Output
+        ------------
             pandas.Series
         """
         d = pd.DataFrame(data[1:], columns=data[0], dtype='float')
