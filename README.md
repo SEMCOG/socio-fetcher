@@ -14,7 +14,7 @@ A tool built for simplifying socio-economic data downloading process, integratin
 ```
 git clone https://github.com/tianxie1995/socio-fetcher.git
 cd socio-fetcher
-pip install
+pip install . 
 ```
 
 ### Test
