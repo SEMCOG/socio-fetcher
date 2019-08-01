@@ -108,6 +108,7 @@ class BEA:
         Industry code to download, default is ["1"] (total)
     GDP_YEAR : list of str
         Year to download for GDP data, default is ["ALL"]
+
     """
 
     def __init__(self):
@@ -186,6 +187,7 @@ class Config:
     BLS : socioFetcher.config.BLS
     BEA : socioFetcher.config.BEA
     Census : socioFetcher.config.Census
+
     """
 
     def __init__(self):

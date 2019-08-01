@@ -28,7 +28,7 @@ Expected use
 
 Todo
 --------------
-- Write doc for the config 
+- Migrate repo to SEMCOG account, 
 
 Log
 --------------

@@ -1,10 +1,9 @@
-
 import pandas as pd
 
 
 class GeoDataFrame:
     """ 
-        A class to store data about specific geography, it
+    A class to store data about specific geography, it
     can load, parse and export data fetched from APIs.
 
     Attributes
@@ -15,6 +14,7 @@ class GeoDataFrame:
         The imaginary part of complex number. 
     DataFrame:pandas.DataFrame    
         DataFrame to store county data
+
     """
 
     def __init__(self, county, dataset="BLS"):
@@ -40,7 +40,7 @@ class GeoDataFrame:
 
     def load(self, data, source="BLS", year=None):
         """
-            Load dict data response from API, and update 
+        Load dict data response from API, and update 
         countyData
 
         Parameters
@@ -55,6 +55,7 @@ class GeoDataFrame:
         Returns
         ----------
             None
+
         """
         if source.upper() == "BLS" and self.dataset == "BLS":
             # self.loadedBLSSeriesID.append(data["seriesID"])

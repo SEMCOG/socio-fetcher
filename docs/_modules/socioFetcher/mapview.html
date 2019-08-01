@@ -1,0 +1,284 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python">
+  <head>
+    <meta charset="utf-8" />
+    <title>socioFetcher.mapview &#8212; socioFetcher 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for socioFetcher.mapview</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ipyleaflet</span>
+<span class="kn">from</span> <span class="nn">branca.colormap</span> <span class="k">import</span> <span class="n">linear</span>
+<span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="k">import</span> <span class="n">IntSlider</span><span class="p">,</span> <span class="n">HTML</span><span class="p">,</span> <span class="n">Dropdown</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Expected behavior: </span>
+<span class="sd">First load: show latest year data for the first attribute </span>
+<span class="sd">When click a county: show the data number in the box </span>
+<span class="sd">When change year in slider: change choro layer data to show new year data</span>
+<span class="sd">When change attribute: change choro layer data to show the new attr data</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="MapView"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView">[docs]</a><span class="k">class</span> <span class="nc">MapView</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A map view class to generate map using ipyleaflet Map and </span>
+<span class="sd">    ipywidgets.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    -----------</span>
+<span class="sd">    dataset:str</span>
+<span class="sd">        dataset name used in creating layer</span>
+<span class="sd">    geo_data:dict</span>
+<span class="sd">        geoJSON object with FIPSCode as ID</span>
+<span class="sd">    choro_data:dict {attributeName=&gt;{year=&gt;{areaID=&gt;value}}}</span>
+<span class="sd">    fipsLookUp:dict {fipsCode=&gt;Name}</span>
+<span class="sd">    availableYearDict:dict  {attrName=&gt;[available year]}</span>
+<span class="sd">    selectedAttr:str</span>
+<span class="sd">        selected attribute name</span>
+<span class="sd">    selectedYear:str</span>
+<span class="sd">        selected year</span>
+<span class="sd">    clickedID:str  </span>
+<span class="sd">        clicked ID</span>
+<span class="sd">    map:ipyleaflet.Map</span>
+<span class="sd">        Map object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">choro_data</span><span class="p">,</span> <span class="n">fipsLookUp</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The constructor for MapView</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset:str</span>
+<span class="sd">            dataset name used in creating layer</span>
+<span class="sd">        geo_data:dict</span>
+<span class="sd">            GeoJSON object with FIPSCode as ID</span>
+<span class="sd">        choro_data:dict {attributeName=&gt;{year=&gt;{areaID=&gt;value}}}</span>
+<span class="sd">        fipsLookUp:dict {fipsCode=&gt;Name}</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ------------</span>
+<span class="sd">        None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">geo_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">choro_data</span> <span class="o">=</span> <span class="n">choro_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fipsLookUp</span> <span class="o">=</span> <span class="n">fipsLookUp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">availableYearDict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAvailableYear</span><span class="p">(</span><span class="n">choro_data</span><span class="p">)</span>
+        <span class="c1"># Init default with the first one</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selectedAttr</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">choro_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selectedYear</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">choro_data</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span>
+            <span class="n">choro_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clickedID</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="MapView.show"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate and return the map object for displaying the map</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        -----------</span>
+<span class="sd">        None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">            map:ipyleaflet.Map</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">=</span> <span class="n">ipyleaflet</span><span class="o">.</span><span class="n">Map</span><span class="p">(</span>
+            <span class="n">layers</span><span class="o">=</span><span class="p">(</span><span class="n">ipyleaflet</span><span class="o">.</span><span class="n">basemap_to_tiles</span><span class="p">(</span>
+                <span class="n">ipyleaflet</span><span class="o">.</span><span class="n">basemaps</span><span class="o">.</span><span class="n">CartoDB</span><span class="o">.</span><span class="n">Positron</span><span class="p">),),</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="n">choro_layer</span> <span class="o">=</span> <span class="n">ipyleaflet</span><span class="o">.</span><span class="n">Choropleth</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">,</span>
+            <span class="n">geo_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="p">,</span>
+            <span class="n">choro_data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">choro_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selectedAttr</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">selectedYear</span><span class="p">],</span>
+            <span class="n">colormap</span><span class="o">=</span><span class="n">linear</span><span class="o">.</span><span class="n">YlOrRd_04</span><span class="p">,</span>
+            <span class="n">style</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;opacity&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="mf">1.9</span><span class="p">,</span>
+                <span class="s1">&#39;dashArray&#39;</span><span class="p">:</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;fillOpacity&#39;</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">handle_click</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;event&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;click&#39;</span><span class="p">:</span>
+                <span class="n">clickedFips</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="s1">&#39;GEOID&#39;</span><span class="p">]</span>
+                <span class="n">clickedName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fipsLookUp</span><span class="p">[</span><span class="n">clickedFips</span><span class="p">]</span>
+                <span class="n">dataBox</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{clickedName}</span><span class="s2"> : </span><span class="si">{self.choro_data[self.selectedAttr][self.selectedYear][clickedFips]:,}</span><span class="s2">&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">clickedID</span> <span class="o">=</span> <span class="n">clickedFips</span>
+        <span class="n">choro_layer</span><span class="o">.</span><span class="n">on_click</span><span class="p">(</span><span class="n">handle_click</span><span class="p">)</span>
+        <span class="c1"># Year select</span>
+
+        <span class="k">def</span> <span class="nf">handle_year_change</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
+            <span class="n">new_year</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">change</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
+            <span class="n">choro_layer</span><span class="o">.</span><span class="n">choro_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choro_data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selectedAttr</span><span class="p">][</span><span class="n">new_year</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clickedID</span><span class="p">:</span>
+                <span class="n">clickedName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fipsLookUp</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clickedID</span><span class="p">]</span>
+                <span class="n">dataBox</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{clickedName}</span><span class="s2"> : </span><span class="si">{self.choro_data[self.selectedAttr][new_year][self.clickedID]:,}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">selectedYear</span> <span class="o">=</span> <span class="n">new_year</span>
+        <span class="n">yearList</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">availableYearDict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">selectedAttr</span><span class="p">]</span>
+        <span class="n">yearListNum</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">yearList</span><span class="p">))</span>
+        <span class="n">minYear</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">yearListNum</span><span class="p">)</span>
+        <span class="n">maxYear</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">yearListNum</span><span class="p">)</span>
+        <span class="n">yearSlider</span><span class="p">,</span> <span class="n">yearWidget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">yearSlider</span><span class="p">(</span><span class="n">minYear</span><span class="p">,</span> <span class="n">maxYear</span><span class="p">,</span> <span class="n">maxYear</span><span class="p">)</span>
+        <span class="n">yearSlider</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">handle_year_change</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
+        <span class="n">dataBox</span><span class="p">,</span> <span class="n">dataWidget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataBox</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">handle_attr_change</span><span class="p">(</span><span class="n">change</span><span class="p">):</span>
+            <span class="n">new_attr</span> <span class="o">=</span> <span class="n">change</span><span class="o">.</span><span class="n">new</span>
+            <span class="n">choro_layer</span><span class="o">.</span><span class="n">choro_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">choro_data</span><span class="p">[</span><span class="n">new_attr</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">selectedYear</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">clickedID</span><span class="p">:</span>
+                <span class="n">clickedName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fipsLookUp</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">clickedID</span><span class="p">]</span>
+                <span class="n">dataBox</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{clickedName}</span><span class="s2"> : </span><span class="si">{self.choro_data[new_attr][self.selectedYear][self.clickedID]:,}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">selectedAttr</span> <span class="o">=</span> <span class="n">new_attr</span>
+        <span class="n">attrDropdown</span><span class="p">,</span> <span class="n">attrDropdownWidget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attrDropdown</span><span class="p">()</span>
+        <span class="n">attrDropdown</span><span class="o">.</span><span class="n">observe</span><span class="p">(</span><span class="n">handle_attr_change</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">)</span>
+        <span class="c1"># Add to map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">add_layer</span><span class="p">(</span><span class="n">choro_layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">add_control</span><span class="p">(</span><span class="n">ipyleaflet</span><span class="o">.</span><span class="n">LayersControl</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">add_control</span><span class="p">(</span><span class="n">ipyleaflet</span><span class="o">.</span><span class="n">FullScreenControl</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">add_control</span><span class="p">(</span><span class="n">attrDropdownWidget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">add_control</span><span class="p">(</span><span class="n">yearWidget</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">add_control</span><span class="p">(</span><span class="n">dataWidget</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span></div>
+
+<div class="viewcode-block" id="MapView.yearSlider"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.yearSlider">[docs]</a>    <span class="k">def</span> <span class="nf">yearSlider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minYear</span><span class="p">,</span> <span class="n">maxYear</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate year slider for map use given available years</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">yearSlider</span> <span class="o">=</span> <span class="n">IntSlider</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Year:&#39;</span><span class="p">,</span>
+                               <span class="nb">min</span><span class="o">=</span><span class="n">minYear</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="n">maxYear</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">yearWidget</span> <span class="o">=</span> <span class="n">ipyleaflet</span><span class="o">.</span><span class="n">WidgetControl</span><span class="p">(</span>
+            <span class="n">widget</span><span class="o">=</span><span class="n">yearSlider</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s1">&#39;topright&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">yearSlider</span><span class="p">,</span> <span class="n">yearWidget</span></div>
+
+<div class="viewcode-block" id="MapView.attrDropdown"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.attrDropdown">[docs]</a>    <span class="k">def</span> <span class="nf">attrDropdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate attribute dropdown for map use</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dropdown</span> <span class="o">=</span> <span class="n">Dropdown</span><span class="p">(</span>
+            <span class="n">options</span><span class="o">=</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">choro_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+            <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">selectedAttr</span><span class="p">,</span>
+            <span class="n">description</span><span class="o">=</span><span class="s1">&#39;Attribute:&#39;</span><span class="p">,</span>
+            <span class="n">disabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">dropdown_wgt</span> <span class="o">=</span> <span class="n">ipyleaflet</span><span class="o">.</span><span class="n">WidgetControl</span><span class="p">(</span>
+            <span class="n">widget</span><span class="o">=</span><span class="n">dropdown</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s1">&#39;topright&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dropdown</span><span class="p">,</span> <span class="n">dropdown_wgt</span></div>
+
+<div class="viewcode-block" id="MapView.dataBox"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.dataBox">[docs]</a>    <span class="k">def</span> <span class="nf">dataBox</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        generate data box for map use</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_box</span> <span class="o">=</span> <span class="n">HTML</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="s2">&quot;click to show data&quot;</span>
+        <span class="p">)</span>
+        <span class="n">data_widget</span> <span class="o">=</span> <span class="n">ipyleaflet</span><span class="o">.</span><span class="n">WidgetControl</span><span class="p">(</span>
+            <span class="n">widget</span><span class="o">=</span><span class="n">data_box</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s1">&#39;topright&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data_box</span><span class="p">,</span> <span class="n">data_widget</span></div>
+
+<div class="viewcode-block" id="MapView.getAvailableYear"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.getAvailableYear">[docs]</a>    <span class="k">def</span> <span class="nf">getAvailableYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choro_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function to get avaiable year for each attribute</span>
+<span class="sd">        given choro_data</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">year_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">attrName</span><span class="p">,</span> <span class="n">attrDict</span> <span class="ow">in</span> <span class="n">choro_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">year_dict</span><span class="p">[</span><span class="n">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">attrDict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">year_dict</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">socioFetcher</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Reference/index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, SEMCOG.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

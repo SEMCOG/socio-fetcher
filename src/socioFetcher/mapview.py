@@ -134,7 +134,7 @@ class MapView:
 
     def yearSlider(self, minYear, maxYear, value):
         """
-            Generate year slider for map use given available years
+        Generate year slider for map use given available years
         """
         yearSlider = IntSlider(description='Year:',
                                min=minYear, max=maxYear, value=value)
@@ -144,7 +144,8 @@ class MapView:
 
     def attrDropdown(self):
         """
-            Generate attribute dropdown for map use
+        Generate attribute dropdown for map use
+
         """
         dropdown = Dropdown(
             options=set(self.choro_data.keys()),
@@ -158,7 +159,8 @@ class MapView:
 
     def dataBox(self):
         """
-            generate data box for map use
+        generate data box for map use
+
         """
         data_box = HTML(
             value="click to show data"
@@ -169,8 +171,9 @@ class MapView:
 
     def getAvailableYear(self, choro_data):
         """
-            Helper function to get avaiable year for each attribute
+        Helper function to get avaiable year for each attribute
         given choro_data
+
         """
         year_dict = {}
         for attrName, attrDict in choro_data.items():

@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python">
+  <head>
+    <meta charset="utf-8" />
+    <title>MapView &#8212; socioFetcher 0.1.1 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="GeoDataFrame" href="GeoDataFrame.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="mapview">
+<h1>MapView<a class="headerlink" href="#mapview" title="Permalink to this headline">¶</a></h1>
+<p>MapView Class module</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.mapview.MapView" title="socioFetcher.mapview.MapView"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MapView</span></code></a>(dataset, geo_data, choro_data, ...)</p></td>
+<td><p>A map view class to generate map using ipyleaflet Map and ipywidgets.</p></td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="module-socioFetcher.mapview">
+<span id="api-docs"></span><h2>API Docs<a class="headerlink" href="#module-socioFetcher.mapview" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="socioFetcher.mapview.MapView">
+<em class="property">class </em><code class="sig-prename descclassname">socioFetcher.mapview.</code><code class="sig-name descname">MapView</code><span class="sig-paren">(</span><em class="sig-param">dataset</em>, <em class="sig-param">geo_data</em>, <em class="sig-param">choro_data</em>, <em class="sig-param">fipsLookUp</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/mapview.html#MapView"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.mapview.MapView" title="Permalink to this definition">¶</a></dt>
+<dd><p>A map view class to generate map using ipyleaflet Map and
+ipywidgets.</p>
+<dl class="attribute">
+<dt id="socioFetcher.mapview.MapView.dataset">
+<code class="sig-name descname">dataset</code><a class="headerlink" href="#socioFetcher.mapview.MapView.dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>dataset name used in creating layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.mapview.MapView.geo_data">
+<code class="sig-name descname">geo_data</code><a class="headerlink" href="#socioFetcher.mapview.MapView.geo_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>geoJSON object with FIPSCode as ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.mapview.MapView.choro_data">
+<code class="sig-name descname">choro_data</code><a class="headerlink" href="#socioFetcher.mapview.MapView.choro_data" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict {attributeName=&gt;{year=&gt;{areaID=&gt;value}}}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.mapview.MapView.fipsLookUp">
+<code class="sig-name descname">fipsLookUp</code><a class="headerlink" href="#socioFetcher.mapview.MapView.fipsLookUp" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict {fipsCode=&gt;Name}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.mapview.MapView.availableYearDict">
+<code class="sig-name descname">availableYearDict</code><a class="headerlink" href="#socioFetcher.mapview.MapView.availableYearDict" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict  {attrName=&gt;[available year]}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.mapview.MapView.selectedAttr">
+<code class="sig-name descname">selectedAttr</code><a class="headerlink" href="#socioFetcher.mapview.MapView.selectedAttr" title="Permalink to this definition">¶</a></dt>
+<dd><p>selected attribute name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.mapview.MapView.selectedYear">
+<code class="sig-name descname">selectedYear</code><a class="headerlink" href="#socioFetcher.mapview.MapView.selectedYear" title="Permalink to this definition">¶</a></dt>
+<dd><p>selected year</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.mapview.MapView.clickedID">
+<code class="sig-name descname">clickedID</code><a class="headerlink" href="#socioFetcher.mapview.MapView.clickedID" title="Permalink to this definition">¶</a></dt>
+<dd><p>clicked ID</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.mapview.MapView.map">
+<code class="sig-name descname">map</code><a class="headerlink" href="#socioFetcher.mapview.MapView.map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Map object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>ipyleaflet.Map</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="socioFetcher.mapview.MapView.attrDropdown">
+<code class="sig-name descname">attrDropdown</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/mapview.html#MapView.attrDropdown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.mapview.MapView.attrDropdown" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate attribute dropdown for map use</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="socioFetcher.mapview.MapView.dataBox">
+<code class="sig-name descname">dataBox</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/mapview.html#MapView.dataBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.mapview.MapView.dataBox" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate data box for map use</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="socioFetcher.mapview.MapView.getAvailableYear">
+<code class="sig-name descname">getAvailableYear</code><span class="sig-paren">(</span><em class="sig-param">choro_data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/mapview.html#MapView.getAvailableYear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.mapview.MapView.getAvailableYear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to get avaiable year for each attribute
+given choro_data</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="socioFetcher.mapview.MapView.show">
+<code class="sig-name descname">show</code><span class="sig-paren">(</span><em class="sig-param">**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/mapview.html#MapView.show"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.mapview.MapView.show" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate and return the map object for displaying the map
+:param None:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>map</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>ipyleaflet.Map</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="socioFetcher.mapview.MapView.yearSlider">
+<code class="sig-name descname">yearSlider</code><span class="sig-paren">(</span><em class="sig-param">minYear</em>, <em class="sig-param">maxYear</em>, <em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/mapview.html#MapView.yearSlider"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.mapview.MapView.yearSlider" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate year slider for map use given available years</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">socioFetcher</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Config.html">Config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Downloader.html">Downloader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="GeoDataFrame.html">GeoDataFrame</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">MapView</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Reference</a><ul>
+      <li>Previous: <a href="GeoDataFrame.html" title="previous chapter">GeoDataFrame</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, SEMCOG.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/Reference/MapView.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
