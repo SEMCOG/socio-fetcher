@@ -56,7 +56,7 @@ class BLS:
     """
 
     def __init__(self):
-        self.API_KEY = "5a0e1a49d56d402d8331feac501593dd"
+        self.API_KEY = None
 
         # BLS Series ID List, https://data.bls.gov/, each
         # represent a county.
@@ -111,7 +111,7 @@ class BEA:
     """
 
     def __init__(self):
-        self.API_KEY = "4040651D-C3D5-4A2F-AEE5-23CD52AF863C"
+        self.API_KEY = None
         # Per capita personal income (dollars) 2/
         self.LINE_CODE = ["3"]
         # Personal Income Summary: Personal Income, Population, Per Capita Personal Income
@@ -157,7 +157,7 @@ class Census:
     """
 
     def __init__(self):
-        self.API_KEY = "a1b79f5105b689bd9c4ed357de83130393b6dec7"
+        self.API_KEY = None
         self.YEAR = ["2010", "2011", "2012",
                      "2013", "2014", "2015", "2016", "2017"]
         # Subject url: https://api.census.gov/data/2017/acs/acs1/subject

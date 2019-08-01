@@ -43,7 +43,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="MapView"><a class="viewcode-back" href="../../MapView.html#socioFetcher.mapview.MapView">[docs]</a><span class="k">class</span> <span class="nc">MapView</span><span class="p">:</span>
+<div class="viewcode-block" id="MapView"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView">[docs]</a><span class="k">class</span> <span class="nc">MapView</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A map view class to generate map using ipyleaflet Map and </span>
 <span class="sd">    ipywidgets.</span>
@@ -95,7 +95,7 @@
             <span class="n">choro_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]]</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">clickedID</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="MapView.show"><a class="viewcode-back" href="../../MapView.html#socioFetcher.mapview.MapView.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="MapView.show"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.show">[docs]</a>    <span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate and return the map object for displaying the map</span>
 <span class="sd">        Parameters</span>
@@ -165,7 +165,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">add_control</span><span class="p">(</span><span class="n">dataWidget</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span></div>
 
-<div class="viewcode-block" id="MapView.yearSlider"><a class="viewcode-back" href="../../MapView.html#socioFetcher.mapview.MapView.yearSlider">[docs]</a>    <span class="k">def</span> <span class="nf">yearSlider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minYear</span><span class="p">,</span> <span class="n">maxYear</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<div class="viewcode-block" id="MapView.yearSlider"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.yearSlider">[docs]</a>    <span class="k">def</span> <span class="nf">yearSlider</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minYear</span><span class="p">,</span> <span class="n">maxYear</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Generate year slider for map use given available years</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -175,7 +175,7 @@
             <span class="n">widget</span><span class="o">=</span><span class="n">yearSlider</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s1">&#39;topright&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">yearSlider</span><span class="p">,</span> <span class="n">yearWidget</span></div>
 
-<div class="viewcode-block" id="MapView.attrDropdown"><a class="viewcode-back" href="../../MapView.html#socioFetcher.mapview.MapView.attrDropdown">[docs]</a>    <span class="k">def</span> <span class="nf">attrDropdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MapView.attrDropdown"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.attrDropdown">[docs]</a>    <span class="k">def</span> <span class="nf">attrDropdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Generate attribute dropdown for map use</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -189,7 +189,7 @@
             <span class="n">widget</span><span class="o">=</span><span class="n">dropdown</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s1">&#39;topright&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dropdown</span><span class="p">,</span> <span class="n">dropdown_wgt</span></div>
 
-<div class="viewcode-block" id="MapView.dataBox"><a class="viewcode-back" href="../../MapView.html#socioFetcher.mapview.MapView.dataBox">[docs]</a>    <span class="k">def</span> <span class="nf">dataBox</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MapView.dataBox"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.dataBox">[docs]</a>    <span class="k">def</span> <span class="nf">dataBox</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            generate data box for map use</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -200,7 +200,7 @@
             <span class="n">widget</span><span class="o">=</span><span class="n">data_box</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="s1">&#39;topright&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">data_box</span><span class="p">,</span> <span class="n">data_widget</span></div>
 
-<div class="viewcode-block" id="MapView.getAvailableYear"><a class="viewcode-back" href="../../MapView.html#socioFetcher.mapview.MapView.getAvailableYear">[docs]</a>    <span class="k">def</span> <span class="nf">getAvailableYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choro_data</span><span class="p">):</span>
+<div class="viewcode-block" id="MapView.getAvailableYear"><a class="viewcode-back" href="../../Reference/MapView.html#socioFetcher.mapview.MapView.getAvailableYear">[docs]</a>    <span class="k">def</span> <span class="nf">getAvailableYear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">choro_data</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Helper function to get avaiable year for each attribute</span>
 <span class="sd">        given choro_data</span>
@@ -228,10 +228,10 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../Config.html">Config</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../Downloader.html">Downloader</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../GeoDataFrame.html">GeoDataFrame</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../MapView.html">MapView</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Reference/index.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 
 <div class="relations">

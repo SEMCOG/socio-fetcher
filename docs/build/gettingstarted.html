@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="python">
   <head>
     <meta charset="utf-8" />
-    <title>Getting Start &#8212; socioFetcher 0.1.1 documentation</title>
+    <title>Getting Started &#8212; socioFetcher 0.1.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -14,6 +14,8 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Reference" href="Reference/index.html" />
+    <link rel="prev" title="Installation" href="Installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -30,8 +32,130 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="getting-start">
-<h1>Getting Start<a class="headerlink" href="#getting-start" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>socioFetcher is a tool integrating python wrappers for BLS, BEA,
+and Census API and interactive visualization tool. socioFetcher
+use <code class="docutils literal notranslate"><span class="pre">requests</span></code> for sending requests to the APIs, use <code class="docutils literal notranslate"><span class="pre">ipyleaflet</span></code>
+to visualizing the downloaded data.</p>
+<p>Before start, make sure install the package following the installation
+page.</p>
+<div class="section" id="customize-config">
+<h2>Customize Config<a class="headerlink" href="#customize-config" title="Permalink to this headline">¶</a></h2>
+<p>We need to let the tool knows what we are looking for and provide
+required information for compiling the requests to the API. We start
+from import come core class object from <code class="docutils literal notranslate"><span class="pre">socioFetcher</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">socioFetcher</span> <span class="k">import</span> <span class="n">Config</span><span class="p">,</span> <span class="n">Downloader</span>
+</pre></div>
+</div>
+<p>After importing <code class="docutils literal notranslate"><span class="pre">Config</span></code>, we should create an object from it call
+<code class="docutils literal notranslate"><span class="pre">myConfig</span></code> and customize it based on our need. But first, we need
+to provide required api_key for each requested dataset.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">myConfig</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;bls_api_key_goes_here&quot;</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BEA</span><span class="o">.</span><span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;bea_api_key_goes_here&quot;</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">Census</span><span class="o">.</span><span class="n">API_KEY</span> <span class="o">=</span> <span class="s2">&quot;census_api_key_goes_here&quot;</span>
+</pre></div>
+</div>
+<p>For each requested dataset, we may provide information on what
+table/data we are looking for. For more detail about the required
+format of individual configration, please checkout
+Reference session in the docs. Here are all available configration
+for each dataset.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 36%" />
+<col style="width: 29%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>BLS</p></td>
+<td><p>BEA</p></td>
+<td><p>Census</p></td>
+</tr>
+<tr class="row-even"><td><p>TABLE_NUMBER</p></td>
+<td><p>LINE_CODE</p></td>
+<td><p>YEAR</p></td>
+</tr>
+<tr class="row-odd"><td><p>NAICS_CODE_LIST</p></td>
+<td><p>TABLE_NAME</p></td>
+<td><p>SUBJECT_LIST</p></td>
+</tr>
+<tr class="row-even"><td><p>DATA_TYPE</p></td>
+<td><p>YEAR</p></td>
+<td><p>DETAIL_LIST</p></td>
+</tr>
+<tr class="row-odd"><td><p>SIZE</p></td>
+<td><p>GDP_METRO_CODE</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>OWNERSHIP</p></td>
+<td><p>GDP_COMPONENT</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>START_YEAR</p></td>
+<td><p>GDP_INDUSTRY</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>END_YEAR</p></td>
+<td><p>GDP_YEAR</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Customize Configration</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">myConfig</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">TABLE_NUMBER</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ENU&quot;</span><span class="p">]</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">DATA_TYPE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">]</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">SIZE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">]</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">OWNERSHIP</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;5&quot;</span><span class="p">]</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">NAICS_CODE_LIST</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;10&quot;</span><span class="p">:</span>   <span class="s2">&quot;10 Total, all industries&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;101&quot;</span><span class="p">:</span>  <span class="s2">&quot;101 Goods-producing&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;102&quot;</span>   <span class="p">:</span> <span class="s2">&quot;102 Service-providing&quot;</span>
+<span class="p">}</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BEA</span><span class="o">.</span><span class="n">API_KDY</span> <span class="o">=</span> <span class="s2">&quot;YOUR_BEA_KEY&quot;</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BEA</span><span class="o">.</span><span class="n">LINE_CODE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;3&quot;</span><span class="p">]</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BEA</span><span class="o">.</span><span class="n">TABLE_NAME</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CAINC1&quot;</span><span class="p">]</span>
+<span class="n">myConfig</span><span class="o">.</span><span class="n">BEA</span><span class="o">.</span><span class="n">YEAR</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ALL&quot;</span><span class="p">]</span>
+<span class="n">datasets</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;BLS&quot;</span><span class="p">,</span> <span class="s2">&quot;BEA&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="download-raw-data">
+<h2>Download raw data<a class="headerlink" href="#download-raw-data" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">fips</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;26093&quot;</span><span class="p">:</span> <span class="s2">&quot;Livingston,MI&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;26099&quot;</span><span class="p">:</span> <span class="s2">&quot;Macomb,MI&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;26115&quot;</span><span class="p">:</span> <span class="s2">&quot;Monroe,MI&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;26125&quot;</span><span class="p">:</span> <span class="s2">&quot;Oakland,MI&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;26147&quot;</span><span class="p">:</span> <span class="s2">&quot;St. Clair,MI&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;26161&quot;</span><span class="p">:</span> <span class="s2">&quot;Washtenaw,MI&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;26163&quot;</span><span class="p">:</span> <span class="s2">&quot;Wayne,MI&quot;</span><span class="p">}</span>
+<span class="n">dl</span> <span class="o">=</span> <span class="n">Downloader</span><span class="p">(</span><span class="n">datasets</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">fips</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="n">config</span><span class="o">=</span><span class="n">myConfig</span><span class="p">)</span>
+<span class="n">dl</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+<span class="n">dl</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;data/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="download-summary-data">
+<h2>Download summary data<a class="headerlink" href="#download-summary-data" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># export summary by geography</span>
+<span class="n">dl</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;summary/&quot;</span><span class="p">,</span> <span class="n">summarize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s2">&quot;geography&quot;</span><span class="p">)</span>
+<span class="c1"># export summary by dataset</span>
+<span class="n">dl</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;summary/&quot;</span><span class="p">,</span> <span class="n">summarize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s2">&quot;dataset&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="visualization-with-ipyleaflet">
+<h2>Visualization with ipyleaflet<a class="headerlink" href="#visualization-with-ipyleaflet" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># in Jupyter notebook, ipython environment</span>
+<span class="n">mapView</span> <span class="o">=</span> <span class="n">dl</span><span class="o">.</span><span class="n">mapping</span><span class="p">(</span><span class="s2">&quot;BLS&quot;</span><span class="p">)</span>
+<span class="n">mapView</span><span class="o">.</span><span class="n">show</span><span class="p">(</span>
+    <span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="mf">42.346814</span><span class="p">,</span> <span class="o">-</span><span class="mf">83.319304</span><span class="p">),</span>
+    <span class="n">zoom</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -51,11 +175,25 @@
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#customize-config">Customize Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-raw-data">Download raw data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-summary-data">Download summary data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualization-with-ipyleaflet">Visualization with ipyleaflet</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Installation.html" title="previous chapter">Installation</a></li>
+      <li>Next: <a href="Reference/index.html" title="next chapter">Reference</a></li>
   </ul></li>
 </ul>
 </div>

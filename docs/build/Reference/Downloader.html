@@ -14,6 +14,8 @@
     <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GeoDataFrame" href="GeoDataFrame.html" />
+    <link rel="prev" title="Config" href="Config.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -53,260 +55,233 @@
 <dt>A downloader to download data for Census Geography</dt><dd><p>given configration from BLS, BEA, or Census.</p>
 </dd>
 </dl>
-<dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>dataset</strong><span class="classifier">List</span></dt><dd><p>List of dataset name, value must be
+<dl class="attribute">
+<dt id="socioFetcher.downloader.Downloader.dataset">
+<code class="sig-name descname">dataset</code><a class="headerlink" href="#socioFetcher.downloader.Downloader.dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of dataset name, value must be
 must be one of BLS, BEA,BEAGDP, or ACS</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List</p>
 </dd>
-<dt><strong>fipsList</strong><span class="classifier">List</span></dt><dd><p>List of FIPS code</p>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.downloader.Downloader.fipsList">
+<code class="sig-name descname">fipsList</code><a class="headerlink" href="#socioFetcher.downloader.Downloader.fipsList" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of FIPS code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>List</p>
 </dd>
-<dt><strong>data</strong><span class="classifier">dict</span></dt><dd><p>dict to save downloaded data</p>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.downloader.Downloader.data">
+<code class="sig-name descname">data</code><a class="headerlink" href="#socioFetcher.downloader.Downloader.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>dict to save downloaded data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
-<dt><strong>options</strong><span class="classifier">dict, optional</span></dt><dd><p>Including years, Industries code, table
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.downloader.Downloader.options">
+<code class="sig-name descname">options</code><a class="headerlink" href="#socioFetcher.downloader.Downloader.options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Including years, Industries code, table
 name, subject, detail</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict, optional</p>
 </dd>
 </dl>
-</dd>
-</dl>
-<p class="rubric">Methods</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.download" title="socioFetcher.downloader.Downloader.download"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code></a>(self)</p></td>
-<td><p>Download data and save to self.data given configuration from constructor.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.downloadACS" title="socioFetcher.downloader.Downloader.downloadACS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">downloadACS</span></code></a>(self)</p></td>
-<td><p>Download ACS data given configuration from constructor.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.downloadBEAGDP" title="socioFetcher.downloader.Downloader.downloadBEAGDP"><code class="xref py py-obj docutils literal notranslate"><span class="pre">downloadBEAGDP</span></code></a>(self)</p></td>
-<td><p>Download BEAGDP data given configuration from constructor.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.downloadBEAIncome" title="socioFetcher.downloader.Downloader.downloadBEAIncome"><code class="xref py py-obj docutils literal notranslate"><span class="pre">downloadBEAIncome</span></code></a>(self)</p></td>
-<td><p>Download BEA data given configuration from constructor.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.downloadBLS" title="socioFetcher.downloader.Downloader.downloadBLS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">downloadBLS</span></code></a>(self)</p></td>
-<td><p>Download BLS data given configuration from constructor.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.export" title="socioFetcher.downloader.Downloader.export"><code class="xref py py-obj docutils literal notranslate"><span class="pre">export</span></code></a>(self, path[, summarize, by])</p></td>
-<td><p>Save downloaded data to specified path</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.get_choro_data" title="socioFetcher.downloader.Downloader.get_choro_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_choro_data</span></code></a>(self, dataset)</p></td>
-<td><p>Generate choropleth data for mapping use in MapView</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.get_geojson_from_TIGER" title="socioFetcher.downloader.Downloader.get_geojson_from_TIGER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_geojson_from_TIGER</span></code></a>(self, fipsList[, ...])</p></td>
-<td><p>Get geojson from Census TIGER REST API(Only support county level for now) Parameters ------------ fipsList:list of str    Requested FIPS code list outFields:list   Fields included in the geojson response, default is [&quot;GEOID&quot;] geo : str     default is &quot;county&quot;, (Only support County)</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.mapping" title="socioFetcher.downloader.Downloader.mapping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mapping</span></code></a>(self[, dataset])</p></td>
-<td><p>Mapping the selected downloaded data in form of Interactive map Parameters ----------- dataset:str      The name of dataset to be mapped</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#socioFetcher.downloader.Downloader.summarize" title="socioFetcher.downloader.Downloader.summarize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summarize</span></code></a>(self[, by])</p></td>
-<td><p>Process downloaded data and produce summrized table by either geography or dataset</p></td>
-</tr>
-</tbody>
-</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.download">
-<code class="sig-name descname">download</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.download" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">download</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.download"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.download" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download data and save to self.data given configuration from
 constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>None</strong></dt><dd></dd>
-</dl>
+<dd class="field-odd"><p><strong>None</strong> -- </p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>None</dt><dd></dd>
-</dl>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.downloadACS">
-<code class="sig-name descname">downloadACS</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.downloadACS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.downloadACS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">downloadACS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.downloadACS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.downloadACS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download ACS data given configuration from constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>None</strong></dt><dd></dd>
-</dl>
+<dd class="field-odd"><p><strong>None</strong> -- </p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>geoClassDict:dict</dt><dd><p>key: FIPS:str,
+<dd class="field-even"><p><strong>geoClassDict</strong> -- key: FIPS:str,
 value: socioFetcher.GeoDataFrame</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.downloadBEAGDP">
-<code class="sig-name descname">downloadBEAGDP</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.downloadBEAGDP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.downloadBEAGDP" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">downloadBEAGDP</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.downloadBEAGDP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.downloadBEAGDP" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download BEAGDP data given configuration from constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>None</strong></dt><dd></dd>
-</dl>
+<dd class="field-odd"><p><strong>None</strong> -- </p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>geoClassDict:dict</dt><dd><p>key: FIPS:str,
+<dd class="field-even"><p><strong>geoClassDict</strong> -- key: FIPS:str,
 value: socioFetcher.GeoDataFrame</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.downloadBEAIncome">
-<code class="sig-name descname">downloadBEAIncome</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.downloadBEAIncome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.downloadBEAIncome" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">downloadBEAIncome</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.downloadBEAIncome"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.downloadBEAIncome" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download BEA data given configuration from constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>None</strong></dt><dd></dd>
-</dl>
+<dd class="field-odd"><p><strong>None</strong> -- </p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>geoClassDict:dict</dt><dd><p>key: FIPS:str,
+<dd class="field-even"><p><strong>geoClassDict</strong> -- key: FIPS:str,
 value: socioFetcher.GeoDataFrame</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.downloadBLS">
-<code class="sig-name descname">downloadBLS</code><span class="sig-paren">(</span><em class="sig-param">self</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.downloadBLS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.downloadBLS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">downloadBLS</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.downloadBLS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.downloadBLS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download BLS data given configuration from constructor.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>None</strong></dt><dd></dd>
-</dl>
+<dd class="field-odd"><p><strong>None</strong> -- </p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>geoClassDict:dict</dt><dd><p>key: FIPS:str,
+<dd class="field-even"><p><strong>geoClassDict</strong> -- key: FIPS:str,
 value: socioFetcher.GeoDataFrame</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.export">
-<code class="sig-name descname">export</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">path</em>, <em class="sig-param">summarize=False</em>, <em class="sig-param">by='geography'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.export" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">export</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">summarize=False</em>, <em class="sig-param">by='geography'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.export" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save downloaded data to specified path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>path:str</strong></dt><dd><p>Abosolute path to a folder where files will be saved</p>
-</dd>
-<dt><strong>summarize:bolean, optional</strong></dt><dd><p>Save summarized data, default is False</p>
-</dd>
-<dt><strong>by:str</strong></dt><dd><p>Summarize option, one of geography and dataset</p>
-</dd>
-</dl>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) -- Abosolute path to a folder where files will be saved</p></li>
+<li><p><strong>summarize</strong> (<em>bolean</em><em>, </em><em>optional</em>) -- Save summarized data, default is False</p></li>
+<li><p><strong>by</strong> (<em>str</em>) -- Summarize option, one of geography and dataset</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>None</dt><dd></dd>
-</dl>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.get_choro_data">
-<code class="sig-name descname">get_choro_data</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.get_choro_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.get_choro_data" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_choro_data</code><span class="sig-paren">(</span><em class="sig-param">dataset</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.get_choro_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.get_choro_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate choropleth data for mapping use in MapView</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>dataset:str</strong></dt><dd><p>The name of the dataset to be ploted in choropleth map</p>
-</dd>
-</dl>
+<dd class="field-odd"><p><strong>dataset</strong> (<em>str</em>) -- The name of the dataset to be ploted in choropleth map</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>choro_data:dict {attributeName=&gt;{year=&gt;{areaID=&gt;value}}}</dt><dd></dd>
-</dl>
+<dd class="field-even"><p><strong>choro_data</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict {attributeName=&gt;{year=&gt;{areaID=&gt;value}}}</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.get_geojson_from_TIGER">
-<code class="sig-name descname">get_geojson_from_TIGER</code><span class="sig-paren">(</span><em class="sig-param">self, fipsList, outFields=['GEOID'], geo='county'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.get_geojson_from_TIGER"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.get_geojson_from_TIGER" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get geojson from Census TIGER REST API(Only support county level for now)
-Parameters
-------------
-fipsList:list of str</p>
-<blockquote>
-<div><p>Requested FIPS code list</p>
-</div></blockquote>
-<dl class="simple">
-<dt>outFields:list</dt><dd><p>Fields included in the geojson response, default is [&quot;GEOID&quot;]</p>
+<code class="sig-name descname">get_geojson_from_TIGER</code><span class="sig-paren">(</span><em class="sig-param">fipsList, outFields=['GEOID'], geo='county'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.get_geojson_from_TIGER"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.get_geojson_from_TIGER" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get geojson from Census TIGER REST API(Only support county level for now)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fipsList</strong> (<em>list of str</em>) -- Requested FIPS code list</p></li>
+<li><p><strong>outFields</strong> (<em>list</em>) -- Fields included in the geojson response, default is [&quot;GEOID&quot;]</p></li>
+<li><p><strong>geo</strong> (<em>str</em>) -- default is &quot;county&quot;, (Only support County)</p></li>
+</ul>
 </dd>
-<dt>geo<span class="classifier">str</span></dt><dd><p>default is &quot;county&quot;, (Only support County)</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>geojson</strong> -- GeoJSON obj</p>
 </dd>
-<dt>Returns:</dt><dd><p>geojson:dict  GeoJSON obj</p>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.mapping">
-<code class="sig-name descname">mapping</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">dataset=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.mapping" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">mapping</code><span class="sig-paren">(</span><em class="sig-param">dataset=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.mapping"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.mapping" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mapping the selected downloaded data in form of Interactive map
-Parameters
------------
-dataset:str</p>
-<blockquote>
-<div><p>The name of dataset to be mapped</p>
-</div></blockquote>
+:param dataset: The name of dataset to be mapped
+:type dataset: str</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><dl class="simple">
-<dt>mapView:SocioFetcher.MapView</dt><dd></dd>
-</dl>
+<dd class="field-odd"><p><strong>mapView</strong></p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>SocioFetcher.MapView</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.summarize">
-<code class="sig-name descname">summarize</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">by='geography'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.summarize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.summarize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">summarize</code><span class="sig-paren">(</span><em class="sig-param">by='geography'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.summarize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.summarize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Process downloaded data and produce summrized table by
 either geography or dataset</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl class="simple">
-<dt><strong>by:str</strong></dt><dd><p>On which summarize will based on, must be one of
+<dd class="field-odd"><p><strong>by</strong> (<em>str</em>) -- On which summarize will based on, must be one of
 geography and dataset</p>
 </dd>
-</dl>
-</dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><dl class="simple">
-<dt>tableDict:dict</dt><dd><p>key: Name of Geography or Name of dataset
+<dd class="field-even"><p><strong>tableDict</strong> -- key: Name of Geography or Name of dataset
 value: pandas.DataFrame</p>
 </dd>
-</dl>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -333,11 +308,23 @@ value: pandas.DataFrame</p>
 
 
 <h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html#contents">Contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="index.html#indices-and-tables">Indices and tables</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Reference</a><ul>
+      <li>Previous: <a href="Config.html" title="previous chapter">Config</a></li>
+      <li>Next: <a href="GeoDataFrame.html" title="next chapter">GeoDataFrame</a></li>
+  </ul></li>
   </ul></li>
 </ul>
 </div>

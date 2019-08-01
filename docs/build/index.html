@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="python">
   <head>
     <meta charset="utf-8" />
-    <title>Reference &#8212; socioFetcher 0.1.1 documentation</title>
+    <title>socioFetcher &#8212; socioFetcher 0.1.1 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -14,7 +14,7 @@
     <script type="text/javascript" src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Config" href="Config.html" />
+    <link rel="next" title="Installation" href="Installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -31,29 +31,38 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="reference">
-<h1>Reference<a class="headerlink" href="#reference" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="sociofetcher">
+<h1>socioFetcher<a class="headerlink" href="#sociofetcher" title="Permalink to this headline">¶</a></h1>
+<p>A tool built for simplifying socio-economic data downloading process,
+integrating python API wrappers of <a class="reference external" href="https://www.bls.gov/">BLS</a>, <a class="reference external" href="https://www.bea.gov/">BEA</a>, and <a class="reference external" href="https://www.census.gov/">Census</a>.
+The tool also allows users to mapping the data in an interactive map
+with <a class="reference external" href="https://github.com/jupyter-widgets/ipyleaflet/">ipyleaflet</a> in Jupyter notebook.</p>
 <div class="section" id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Config.html">Config</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Config.html#summary">Summary</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Config.html#module-socioFetcher.config">API Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Installation.html#install-from-github">Install from Github</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="Downloader.html">Downloader</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="Downloader.html#module-socioFetcher.downloader">API Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gettingstarted.html#customize-config">Customize Config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gettingstarted.html#download-raw-data">Download raw data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gettingstarted.html#download-summary-data">Download summary data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gettingstarted.html#visualization-with-ipyleaflet">Visualization with ipyleaflet</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="GeoDataFrame.html">GeoDataFrame</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="GeoDataFrame.html#module-socioFetcher.geodataframe">API Docs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/index.html">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Reference/index.html#contents">Contents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Reference/Config.html">Config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Reference/Downloader.html">Downloader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Reference/GeoDataFrame.html">GeoDataFrame</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Reference/MapView.html">MapView</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="MapView.html">MapView</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="MapView.html#module-socioFetcher.mapview">API Docs</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/index.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 </div>
 </div>
@@ -85,17 +94,17 @@
 
 <h3>Navigation</h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="Config.html">Config</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Downloader.html">Downloader</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GeoDataFrame.html">GeoDataFrame</a></li>
-<li class="toctree-l1"><a class="reference internal" href="MapView.html">MapView</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Reference/index.html#indices-and-tables">Indices and tables</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
-      <li>Next: <a href="Config.html" title="next chapter">Config</a></li>
+      <li>Next: <a href="Installation.html" title="next chapter">Installation</a></li>
   </ul></li>
 </ul>
 </div>

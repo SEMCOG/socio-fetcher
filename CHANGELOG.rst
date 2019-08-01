@@ -1,6 +1,5 @@
 Change Log
 ==============
-- Data Update Mechanism, keep ALLYEAR as default, explain the updating process in doc
 
 Expected use
 --------------
@@ -33,8 +32,13 @@ Todo
 
 Log
 --------------
+- 08/01 
+    - Add gettingstarted and installation pages in docs
+    - Remove all credentials in the config and edit .gitigonore to exclude test folder
+    - Transfer the repo to SEMCOG account
+- 07/31 Add doc session in root dir, add docstring in modules
 - 07/30 
-    - Improving BLS downloading and bug fixed,
+    - Improving BLS downloading and bug fixed
     - Added and tested MapView module, mapping data to the map
 - 07/29 Finished and test mapping module. 91% cov
     - 📝Add year, attr select and data display widget in the map

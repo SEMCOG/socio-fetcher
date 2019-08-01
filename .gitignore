@@ -1,6 +1,9 @@
 /data
+/test
 
-todo.md
+/example/.ipynb_checkpoints
+/example/data
+/example/runall.py
 
 # === Global Rules ===
 .vscode

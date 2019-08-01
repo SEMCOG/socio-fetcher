@@ -7,57 +7,62 @@ from socioFetcher.geodataframe import GeoDataFrame
 
 
 class TestDownloader:
+
     @pytest.mark.parametrize('dataset, fipsList', [
         (['BEA', 'BLS', 'ACS'], ["26093"]),
         (['BEA', 'BLS'], ["26093"]),
         (['BEA'], ["26093"]),
         (['BEAGDP'], ["11460"])
     ])
-    def test_init_dataset(self, dataset, fipsList):
-        downloader = Downloader(dataset, fipsList)
+    def test_init_dataset(self, dataset, fipsList, config):
+        downloader = Downloader(dataset, fipsList, config=config)
         assert downloader.dataset == dataset
         assert downloader.fipsList == fipsList
         assert downloader.data == {fips: {} for fips in fipsList}
         assert isinstance(downloader.config, Config)
 
-    def test_init_dataset_get_raise(self):
+    def test_init_dataset_get_raise(self, config):
         with pytest.raises(TypeError):
-            Downloader([], ["26093"])
+            Downloader([], ["26093"], config=config)
         with pytest.raises(TypeError):
-            Downloader("BEA", ["26093"])
+            Downloader("BEA", ["26093"], config=config)
         with pytest.raises(ValueError):
-            Downloader(["INVALID"], ["26093"])
+            Downloader(["INVALID"], ["26093"], config=config)
         with pytest.raises(ValueError):
-            Downloader(["BEA", "BEAGDP"], ["11460"])
+            Downloader(["BEA", "BEAGDP"], ["11460"], config=config)
 
-    def test_init_fipsList_get_raise(self):
+    def test_init_fipsList_get_raise(self, config):
         with pytest.raises(TypeError):
-            Downloader(["BEA", "BLS"], [])
+            Downloader(["BEA", "BLS"], [], config=config)
         with pytest.raises(TypeError):
-            Downloader(["BEA", "BLS"], "26093")
+            Downloader(["BEA", "BLS"], "26093", config=config)
         with pytest.raises(ValueError):
-            Downloader(["BEA", "BLS"], ["00000"])
+            Downloader(["BEA", "BLS"], ["00000"], config=config)
 
-    def test_getBLSSeriesList(self):
+    def test_getBLSSeriesList(self, config):
         fipsList = ["26093"]
-        downloader = Downloader(["BLS"], fipsList)
+        downloader = Downloader(["BLS"], fipsList, config=config)
         expected_series_list = []
         config = Config()
-        for sridList in itertools.product(config.BLS.TABLE_NUMBER,
-                                          fipsList,
-                                          config.BLS.DATA_TYPE,
-                                          config.BLS.SIZE,
-                                          config.BLS.OWNERSHIP,
-                                          config.BLS.NAICS_CODE_LIST):
+        for sridTup in itertools.product(config.BLS.TABLE_NUMBER,
+                                         fipsList,
+                                         config.BLS.DATA_TYPE,
+                                         config.BLS.SIZE,
+                                         config.BLS.OWNERSHIP,
+                                         config.BLS.NAICS_CODE_LIST.keys()):
+            sridList = list(sridTup)
+            if sridList[-1] == "10":
+                # if is Total, change ownership to all
+                sridList[-2] = "0"
             srid = ""
             for item in sridList:
                 srid += item
             expected_series_list.append(srid)
         assert expected_series_list == downloader._getBLSSeriesList()
 
-    def test_getBEAIncomePayload(self):
+    def test_getBEAIncomePayload(self, config):
         fipsList = ["26093"]
-        downloader = Downloader(["BEA"], fipsList)
+        downloader = Downloader(["BEA"], fipsList, config=config)
         expected_series_list = []
         config = Config()
         for payload in itertools.product(fipsList,
@@ -67,9 +72,9 @@ class TestDownloader:
             expected_series_list.append(payload)
         assert expected_series_list == downloader._getBEAIncomePayload()
 
-    def test_getBEAGDPPayload(self):
+    def test_getBEAGDPPayload(self, config):
         fipsList = ["11460"]
-        downloader = Downloader(["BEAGDP"], fipsList)
+        downloader = Downloader(["BEAGDP"], fipsList, config=config)
         expected_series_list = []
         config = Config()
         for payload in itertools.product(fipsList,
@@ -79,30 +84,30 @@ class TestDownloader:
             expected_series_list.append(payload)
         assert expected_series_list == downloader._getBEAGDPPayload()
 
-    def test_downloadBLS(self):
+    def test_downloadBLS(self, config):
         fipsList = ["26093"]
-        downloader = Downloader(["BLS"], fipsList)
+        downloader = Downloader(["BLS"], fipsList, config=config)
         downloader.download()
         assert downloader.data
         assert isinstance(downloader.data["26093"]["BLS"], GeoDataFrame)
 
-    def test_downloadBEA(self):
+    def test_downloadBEA(self, config):
         fipsList = ["26093"]
-        downloader = Downloader(["BEA"], fipsList)
+        downloader = Downloader(["BEA"], fipsList, config=config)
         downloader.download()
         assert downloader.data
         assert isinstance(downloader.data["26093"]["BEA"], GeoDataFrame)
 
-    def test_downloadBEAGDP(self):
+    def test_downloadBEAGDP(self, config):
         fipsList = ["11460"]
-        downloader = Downloader(["BEAGDP"], fipsList)
+        downloader = Downloader(["BEAGDP"], fipsList, config=config)
         downloader.download()
         assert downloader.data
         assert isinstance(downloader.data["11460"]["BEAGDP"], GeoDataFrame)
 
-    def test_downloadACS(self):
+    def test_downloadACS(self, config):
         fipsList = ["26093"]
-        downloader = Downloader(["ACS"], fipsList)
+        downloader = Downloader(["ACS"], fipsList, config=config)
         downloader.download()
         assert downloader.data
         assert isinstance(downloader.data["26093"]["ACS"], GeoDataFrame)
@@ -113,16 +118,17 @@ class TestDownloader:
         (['BEA'], ["26093"]),
         (['BEAGDP'], ["11460"])
     ])
-    def test_download(self, dataset, fipsList):
-        downloader = Downloader(dataset, fipsList)
+    def test_download(self, dataset, fipsList, config):
+        downloader = Downloader(dataset, fipsList, config=config)
         downloader.download()
         data = downloader.data
         assert list(data.keys()) == fipsList
         assert list(data[fipsList[0]].keys()) == dataset
 
     @pytest.fixture()
-    def downloader(self):
-        downloader = Downloader(['BEA', 'BLS', 'ACS'], ["26161", "26163"])
+    def downloader(self, config):
+        downloader = Downloader(['BEA', 'BLS', 'ACS'], [
+                                "26161", "26163"], config=config)
         downloader.download()
         return downloader
 

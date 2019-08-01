@@ -9,8 +9,8 @@ class TestDownload:
         (['BEA'], ["26093"]),
         (['BEAGDP'], ["11460"])
     ])
-    def test_download(self, dataset, fipsList):
+    def test_download(self, dataset, fipsList, config):
         print(dataset)
-        downloader = Downloader(dataset, fipsList)
+        downloader = Downloader(dataset, fipsList, config=config)
         downloader.download()
         assert list(downloader.data.keys()) == fipsList
