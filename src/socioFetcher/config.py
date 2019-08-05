@@ -158,19 +158,18 @@ class ACS:
         "2013", "2014", "2015", "2016", "2017"]
     SUBJECT_LIST : dict  {SUBJECT_ID=>SUBJECT_NAME}
         Subject id list to download, default is {
-            # only available in ACS5
-            "S0102_C01_036E": "Some college or associate's degree",
-            # only available in ACS5
-            "S0102_C01_037E": "Bachelor's degree or higher",
-            "S0101_C01_001E": "Total population",
-            "S0102_C01_087E": "Under proverty line",  # only available in ACS5
+        # only available in ACS5
+        "S0102_C01_036E": "Some college or associate's degree",
+        # only available in ACS5
+        "S0102_C01_037E": "Bachelor's degree or higher",
+        "S0101_C01_001E": "Total population",
+        "S0102_C01_087E": "Under proverty line",  # only available in ACS5
         }
     DETAIL_LIST : dict  {Detail_ID=>Detail_NAME}
         Detail id list to download, default is {
-            "C17016_001E": "Total Household",  # only in acs1
-            "C17016_002E": "Household Below poverty level"  # only in acs1
+        "C17016_001E": "Total Household",  # only in acs1
+        "C17016_002E": "Household Below poverty level"  # only in acs1
         }
-
     """
 
     def __init__(self):

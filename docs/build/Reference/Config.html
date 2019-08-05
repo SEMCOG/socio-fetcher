@@ -44,7 +44,7 @@
 </colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#socioFetcher.config.Config" title="socioFetcher.config.Config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Config</span></code></a>()</p></td>
-<td><p>Class to hold all ACS(Census) settings for the downloader</p></td>
+<td><p>Class to hold all settings for the downloader</p></td>
 </tr>
 </tbody>
 </table>
@@ -52,9 +52,71 @@
 <div class="section" id="module-socioFetcher.config">
 <span id="api-docs"></span><h2>API Docs<a class="headerlink" href="#module-socioFetcher.config" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
+<dt id="socioFetcher.config.ACS">
+<em class="property">class </em><code class="sig-prename descclassname">socioFetcher.config.</code><code class="sig-name descname">ACS</code><a class="reference internal" href="../_modules/socioFetcher/config.html#ACS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.config.ACS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to hold all ACS(Census) settings for the downloader</p>
+<dl class="attribute">
+<dt id="socioFetcher.config.ACS.API_KEY">
+<code class="sig-name descname">API_KEY</code><a class="headerlink" href="#socioFetcher.config.ACS.API_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>API key for ACS(Census) api</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str, required</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.config.ACS.YEAR">
+<code class="sig-name descname">YEAR</code><a class="headerlink" href="#socioFetcher.config.ACS.YEAR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Year list to download ACS data, defualt is [&quot;2010&quot;, &quot;2011&quot;, &quot;2012&quot;,
+&quot;2013&quot;, &quot;2014&quot;, &quot;2015&quot;, &quot;2016&quot;, &quot;2017&quot;]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.config.ACS.SUBJECT_LIST">
+<code class="sig-name descname">SUBJECT_LIST</code><a class="headerlink" href="#socioFetcher.config.ACS.SUBJECT_LIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subject id list to download, default is {
+# only available in ACS5
+&quot;S0102_C01_036E&quot;: &quot;Some college or associate's degree&quot;,
+# only available in ACS5
+&quot;S0102_C01_037E&quot;: &quot;Bachelor's degree or higher&quot;,
+&quot;S0101_C01_001E&quot;: &quot;Total population&quot;,
+&quot;S0102_C01_087E&quot;: &quot;Under proverty line&quot;,  # only available in ACS5
+}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict  {SUBJECT_ID=&gt;SUBJECT_NAME}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.config.ACS.DETAIL_LIST">
+<code class="sig-name descname">DETAIL_LIST</code><a class="headerlink" href="#socioFetcher.config.ACS.DETAIL_LIST" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detail id list to download, default is {
+&quot;C17016_001E&quot;: &quot;Total Household&quot;,  # only in acs1
+&quot;C17016_002E&quot;: &quot;Household Below poverty level&quot;  # only in acs1
+}</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict  {Detail_ID=&gt;Detail_NAME}</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
 <dt id="socioFetcher.config.BEA">
 <em class="property">class </em><code class="sig-prename descclassname">socioFetcher.config.</code><code class="sig-name descname">BEA</code><a class="reference internal" href="../_modules/socioFetcher/config.html#BEA"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.config.BEA" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to hold all BEA settings for the downloader</p>
+<dd><p>Class to hold all BEA settings for the downloader, for details about
+table and its attributes, visit <a class="reference external" href="https://apps.bea.gov/itable/iTable.cfm?ReqID=70&amp;step=1">https://apps.bea.gov/itable/iTable.cfm?ReqID=70&amp;step=1</a></p>
 <dl class="attribute">
 <dt id="socioFetcher.config.BEA.API_KEY">
 <code class="sig-name descname">API_KEY</code><a class="headerlink" href="#socioFetcher.config.BEA.API_KEY" title="Permalink to this definition">¶</a></dt>
@@ -216,6 +278,28 @@
 </dd></dl>
 
 <dl class="attribute">
+<dt id="socioFetcher.config.BLS.SEASONAL_ADJUST_CODE">
+<code class="sig-name descname">SEASONAL_ADJUST_CODE</code><a class="headerlink" href="#socioFetcher.config.BLS.SEASONAL_ADJUST_CODE" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all codes: <a class="reference external" href="https://download.bls.gov/pub/time.series/la/la.measure">https://download.bls.gov/pub/time.series/la/la.measure</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="socioFetcher.config.BLS.MEASURE_CODE">
+<code class="sig-name descname">MEASURE_CODE</code><a class="headerlink" href="#socioFetcher.config.BLS.MEASURE_CODE" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of all codes: <a class="reference external" href="https://download.bls.gov/pub/time.series/la/la.measure">https://download.bls.gov/pub/time.series/la/la.measure</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict  {code=&gt;name}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="socioFetcher.config.BLS.START_YEAR">
 <code class="sig-name descname">START_YEAR</code><a class="headerlink" href="#socioFetcher.config.BLS.START_YEAR" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start year of the query</p>
@@ -240,74 +324,9 @@
 </dd></dl>
 
 <dl class="class">
-<dt id="socioFetcher.config.Census">
-<em class="property">class </em><code class="sig-prename descclassname">socioFetcher.config.</code><code class="sig-name descname">Census</code><a class="reference internal" href="../_modules/socioFetcher/config.html#Census"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.config.Census" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to hold all ACS(Census) settings for the downloader</p>
-<dl class="attribute">
-<dt id="socioFetcher.config.Census.API_KEY">
-<code class="sig-name descname">API_KEY</code><a class="headerlink" href="#socioFetcher.config.Census.API_KEY" title="Permalink to this definition">¶</a></dt>
-<dd><p>API key for ACS(Census) api</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>str, required</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="socioFetcher.config.Census.YEAR">
-<code class="sig-name descname">YEAR</code><a class="headerlink" href="#socioFetcher.config.Census.YEAR" title="Permalink to this definition">¶</a></dt>
-<dd><p>Year list to download ACS data, defualt is [&quot;2010&quot;, &quot;2011&quot;, &quot;2012&quot;,
-&quot;2013&quot;, &quot;2014&quot;, &quot;2015&quot;, &quot;2016&quot;, &quot;2017&quot;]</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>list of str</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="socioFetcher.config.Census.SUBJECT_LIST">
-<code class="sig-name descname">SUBJECT_LIST</code><a class="headerlink" href="#socioFetcher.config.Census.SUBJECT_LIST" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Subject id list to download, default is {</dt><dd><p># only available in ACS5
-&quot;S0102_C01_036E&quot;: &quot;Some college or associate's degree&quot;,
-# only available in ACS5
-&quot;S0102_C01_037E&quot;: &quot;Bachelor's degree or higher&quot;,
-&quot;S0101_C01_001E&quot;: &quot;Total population&quot;,
-&quot;S0102_C01_087E&quot;: &quot;Under proverty line&quot;,  # only available in ACS5</p>
-</dd>
-</dl>
-<p>}</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>dict  {SUBJECT_ID=&gt;SUBJECT_NAME}</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="socioFetcher.config.Census.DETAIL_LIST">
-<code class="sig-name descname">DETAIL_LIST</code><a class="headerlink" href="#socioFetcher.config.Census.DETAIL_LIST" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Detail id list to download, default is {</dt><dd><p>&quot;C17016_001E&quot;: &quot;Total Household&quot;,  # only in acs1
-&quot;C17016_002E&quot;: &quot;Household Below poverty level&quot;  # only in acs1</p>
-</dd>
-</dl>
-<p>}</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>dict  {Detail_ID=&gt;Detail_NAME}</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
 <dt id="socioFetcher.config.Config">
 <em class="property">class </em><code class="sig-prename descclassname">socioFetcher.config.</code><code class="sig-name descname">Config</code><a class="reference internal" href="../_modules/socioFetcher/config.html#Config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.config.Config" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to hold all ACS(Census) settings for the downloader</p>
+<dd><p>Class to hold all settings for the downloader</p>
 <dl class="attribute">
 <dt id="socioFetcher.config.Config.Global">
 <code class="sig-name descname">Global</code><a class="headerlink" href="#socioFetcher.config.Config.Global" title="Permalink to this definition">¶</a></dt>
@@ -339,11 +358,11 @@
 </dd></dl>
 
 <dl class="attribute">
-<dt id="socioFetcher.config.Config.Census">
-<code class="sig-name descname">Census</code><a class="headerlink" href="#socioFetcher.config.Config.Census" title="Permalink to this definition">¶</a></dt>
+<dt id="socioFetcher.config.Config.ACS">
+<code class="sig-name descname">ACS</code><a class="headerlink" href="#socioFetcher.config.Config.ACS" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#socioFetcher.config.Census" title="socioFetcher.config.Census">socioFetcher.config.Census</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#socioFetcher.config.ACS" title="socioFetcher.config.ACS">socioFetcher.config.ACS</a></p>
 </dd>
 </dl>
 </dd></dl>

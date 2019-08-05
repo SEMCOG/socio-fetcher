@@ -39,6 +39,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">socioFetcher.config</span> <span class="k">import</span> <span class="n">Config</span>
 <span class="kn">from</span> <span class="nn">socioFetcher.geodataframe</span> <span class="k">import</span> <span class="n">GeoDataFrame</span>
 <span class="kn">from</span> <span class="nn">socioFetcher.mapview</span> <span class="k">import</span> <span class="n">MapView</span>
@@ -121,7 +122,7 @@
             <span class="k">for</span> <span class="n">fips</span><span class="p">,</span> <span class="n">geoDf</span> <span class="ow">in</span> <span class="n">res</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">fips</span><span class="p">][</span><span class="n">dataset</span><span class="p">]</span> <span class="o">=</span> <span class="n">geoDf</span></div>
 
-<div class="viewcode-block" id="Downloader.export"><a class="viewcode-back" href="../../Reference/Downloader.html#socioFetcher.downloader.Downloader.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">summarize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s2">&quot;geography&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="Downloader.export"><a class="viewcode-back" href="../../Reference/Downloader.html#socioFetcher.downloader.Downloader.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">summarize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s2">&quot;geography&quot;</span><span class="p">,</span> <span class="n">saveformat</span><span class="o">=</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save downloaded data to specified path</span>
 
@@ -133,6 +134,11 @@
 <span class="sd">            Save summarized data, default is False</span>
 <span class="sd">        by:str</span>
 <span class="sd">            Summarize option, one of geography and dataset</span>
+<span class="sd">        saveformat:str</span>
+<span class="sd">            Export format, &quot;csv&quot; or &quot;json&quot;</span>
+<span class="sd">        orient:str</span>
+<span class="sd">            Only apply to json export, define orient for json export</span>
+<span class="sd">            visit https://pandas.pydata.org/pandas-docs/version/0.24.2/reference/api/pandas.DataFrame.to_json.html</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        ----------</span>
@@ -146,22 +152,40 @@
                 <span class="k">for</span> <span class="n">datasetName</span><span class="p">,</span> <span class="n">geoDf</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="n">savePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">areaName</span><span class="p">)</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">savePath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-                    <span class="n">geoDf</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savePath</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{datasetName}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
-                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">saveformat</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+                        <span class="n">geoDf</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savePath</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{datasetName}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">geoDf</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savePath</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{datasetName}</span><span class="s2">.json&quot;</span><span class="p">),</span>
+                            <span class="n">orient</span><span class="o">=</span><span class="n">orient</span>
+                        <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">summary</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">summarize</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">by</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">by</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;geography&quot;</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">areaID</span><span class="p">,</span> <span class="n">Df</span> <span class="ow">in</span> <span class="n">summary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                     <span class="n">areaName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Global</span><span class="o">.</span><span class="n">FIPS_CODE</span><span class="p">[</span><span class="n">areaID</span><span class="p">]</span>
-                    <span class="n">Df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{areaName}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
-                    <span class="p">)</span>
+                    <span class="k">if</span> <span class="n">saveformat</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+                        <span class="n">Df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{areaName}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">Df</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{areaName}</span><span class="s2">.json&quot;</span><span class="p">),</span>
+                            <span class="n">orient</span><span class="o">=</span><span class="n">orient</span>
+                        <span class="p">)</span>
             <span class="k">elif</span> <span class="n">by</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;dataset&quot;</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">datasetName</span><span class="p">,</span> <span class="n">Df</span> <span class="ow">in</span> <span class="n">summary</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                    <span class="n">Df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
-                        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{datasetName}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
-                    <span class="p">)</span></div>
+                    <span class="k">if</span> <span class="n">saveformat</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+                        <span class="n">Df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{datasetName}</span><span class="s2">.csv&quot;</span><span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">Df</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span>
+                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{datasetName}</span><span class="s2">.json&quot;</span><span class="p">),</span>
+                            <span class="n">orient</span><span class="o">=</span><span class="n">orient</span>
+                        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Downloader.summarize"><a class="viewcode-back" href="../../Reference/Downloader.html#socioFetcher.downloader.Downloader.summarize">[docs]</a>    <span class="k">def</span> <span class="nf">summarize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">by</span><span class="o">=</span><span class="s2">&quot;geography&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -247,12 +271,14 @@
                 <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;dict&quot;</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">attrID</span><span class="p">,</span> <span class="n">attrdict</span> <span class="ow">in</span> <span class="n">areaDatasetDict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">dataset</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;BLS&#39;</span><span class="p">:</span>
-                    <span class="n">attrName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">NAICS_CODE_LIST</span><span class="p">[</span><span class="n">attrID</span><span class="p">]</span>
+                    <span class="n">blsAttrLookUp</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">NAICS_CODE_LIST</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">MEASURE_CODE</span><span class="p">}</span>
+                    <span class="n">attrName</span> <span class="o">=</span> <span class="n">blsAttrLookUp</span><span class="p">[</span><span class="n">attrID</span><span class="p">]</span>
                 <span class="k">elif</span> <span class="n">dataset</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;ACS&#39;</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">attrID</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Census</span><span class="o">.</span><span class="n">SUBJECT_LIST</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                        <span class="n">attrName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Census</span><span class="o">.</span><span class="n">SUBJECT_LIST</span><span class="p">[</span><span class="n">attrID</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">attrID</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ACS</span><span class="o">.</span><span class="n">SUBJECACS</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">attrName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ACS</span><span class="o">.</span><span class="n">SUBJECACS</span><span class="p">[</span><span class="n">attrID</span><span class="p">]</span>
                     <span class="k">else</span><span class="p">:</span>
-                        <span class="n">attrName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Census</span><span class="o">.</span><span class="n">DETAIL_LIST</span><span class="p">[</span><span class="n">attrID</span><span class="p">]</span>
+                        <span class="n">attrName</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ACS</span><span class="o">.</span><span class="n">DETAIACS</span><span class="p">[</span><span class="n">attrID</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">attrName</span> <span class="o">=</span> <span class="n">attrID</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">attrName</span> <span class="ow">in</span> <span class="n">choro_data</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -353,14 +379,14 @@
         <span class="c1"># Initialize session and default data</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
         <span class="n">s</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Content-type&#39;</span><span class="p">:</span> <span class="s1">&#39;application/json&#39;</span><span class="p">}</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[A-Z]+\d</span><span class="si">{5}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">srsList</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">seriesListChunk</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Download BLS data&quot;</span><span class="p">):</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span>
-                <span class="p">{</span><span class="s2">&quot;seriesid&quot;</span><span class="p">:</span> <span class="n">srsList</span><span class="p">,</span>
-                 <span class="s2">&quot;startyear&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">START_YEAR</span><span class="p">,</span>
-                 <span class="s2">&quot;endyear&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">END_YEAR</span><span class="p">,</span>
-                 <span class="s2">&quot;registrationkey&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">API_KEY</span><span class="p">,</span>
-                 <span class="s2">&quot;calculations&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
-                 <span class="s2">&quot;annualaverage&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;seriesid&quot;</span><span class="p">:</span> <span class="n">srsList</span><span class="p">,</span>
+                               <span class="s2">&quot;startyear&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">START_YEAR</span><span class="p">,</span>
+                               <span class="s2">&quot;endyear&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">END_YEAR</span><span class="p">,</span>
+                               <span class="s2">&quot;registrationkey&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">API_KEY</span><span class="p">,</span>
+                               <span class="s2">&quot;calculations&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;annualaverage&quot;</span><span class="p">:</span> <span class="s2">&quot;true&quot;</span><span class="p">})</span>
             <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
                 <span class="s1">&#39;https://api.bls.gov/publicAPI/v2/timeseries/data/&#39;</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
@@ -374,8 +400,11 @@
                     <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
             <span class="n">json_data</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">seriesResult</span> <span class="ow">in</span> <span class="n">json_data</span><span class="p">[</span><span class="s2">&quot;Results&quot;</span><span class="p">][</span><span class="s2">&quot;series&quot;</span><span class="p">]:</span>
-                <span class="n">areaCode</span> <span class="o">=</span> <span class="n">seriesResult</span><span class="p">[</span><span class="s2">&quot;seriesID&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">seriesResult</span><span class="p">[</span><span class="s2">&quot;seriesID&quot;</span><span class="p">])</span>
+                <span class="n">areaCode</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">()[</span><span class="o">-</span><span class="mi">5</span><span class="p">:]</span>
                 <span class="n">geoClassDict</span><span class="p">[</span><span class="n">areaCode</span><span class="p">]</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">seriesResult</span><span class="p">)</span>
+                <span class="c1"># geoClassDict[areaCode].DataFrame = geoClassDict[areaCode].DataFrame.rename(</span>
+                <span class="c1">#     self.config.BLS.MEASURE_CODE, axis=1)</span>
         <span class="k">return</span> <span class="n">geoClassDict</span></div>
 
 <div class="viewcode-block" id="Downloader.downloadBEAIncome"><a class="viewcode-back" href="../../Reference/Downloader.html#socioFetcher.downloader.Downloader.downloadBEAIncome">[docs]</a>    <span class="k">def</span> <span class="nf">downloadBEAIncome</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -497,7 +526,7 @@
         <span class="c1"># Initialize session and default data</span>
         <span class="n">s</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
         <span class="n">s</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Census</span><span class="o">.</span><span class="n">API_KEY</span>
+            <span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ACS</span><span class="o">.</span><span class="n">API_KEY</span>
         <span class="p">}</span>
         <span class="k">for</span> <span class="n">sbjPay</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">subjectPayload</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Download ACS Subject Table&quot;</span><span class="p">):</span>
             <span class="n">getSbjStr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
@@ -562,20 +591,32 @@
 <span class="sd">        Helper function to Generate Series List form given parameter list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">seriesList</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">sridTup</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">TABLE_NUMBER</span><span class="p">,</span>
-                                         <span class="bp">self</span><span class="o">.</span><span class="n">fipsList</span><span class="p">,</span>
-                                         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">DATA_TYPE</span><span class="p">,</span>
-                                         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">SIZE</span><span class="p">,</span>
-                                         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">OWNERSHIP</span><span class="p">,</span>
-                                         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">NAICS_CODE_LIST</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
-            <span class="n">sridList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sridTup</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">sridList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;10&quot;</span><span class="p">:</span>
-                <span class="c1"># if is Total, change ownership to all</span>
-                <span class="n">sridList</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
-            <span class="n">srid</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sridList</span><span class="p">:</span>
-                <span class="n">srid</span> <span class="o">+=</span> <span class="n">item</span>
-            <span class="n">seriesList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">srid</span><span class="p">)</span>
+        <span class="c1"># State and County Employment and Wages(Quarterly Census of Employment &amp; Wages - QCEW)</span>
+        <span class="k">if</span> <span class="s2">&quot;ENU&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">TABLE_NUMBER</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sridTup</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fipsList</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">DATA_TYPE</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">SIZE</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">OWNERSHIP</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">NAICS_CODE_LIST</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">sridList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sridTup</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">sridList</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;10&quot;</span><span class="p">:</span>
+                    <span class="c1"># if is Total, change ownership to all</span>
+                    <span class="n">sridList</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;0&quot;</span>
+                <span class="n">srid</span> <span class="o">=</span> <span class="s2">&quot;ENU&quot;</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sridList</span><span class="p">:</span>
+                    <span class="n">srid</span> <span class="o">+=</span> <span class="n">item</span>
+                <span class="n">seriesList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">srid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;LA&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">TABLE_NUMBER</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sridTup</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">SEASONAL_ADJUST_CODE</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">fipsList</span><span class="p">,</span>
+                                             <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">BLS</span><span class="o">.</span><span class="n">MEASURE_CODE</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">sridList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">sridTup</span><span class="p">)</span>
+                <span class="c1"># Convert fipscode to area code</span>
+                <span class="n">sridList</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;CN</span><span class="si">{sridList[1]}</span><span class="s2">00000000&quot;</span>
+                <span class="n">srid</span> <span class="o">=</span> <span class="s2">&quot;LA&quot;</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sridList</span><span class="p">:</span>
+                    <span class="n">srid</span> <span class="o">+=</span> <span class="n">item</span>
+                <span class="n">seriesList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">srid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">seriesList</span>
 
     <span class="k">def</span> <span class="nf">_getBEAIncomePayload</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -610,18 +651,26 @@
             <span class="s2">&quot;SUBJECT&quot;</span><span class="p">:</span> <span class="p">[],</span>
             <span class="s2">&quot;DETAIL&quot;</span><span class="p">:</span> <span class="p">[]</span>
         <span class="p">}</span>
-        <span class="k">for</span> <span class="n">payload</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Census</span><span class="o">.</span><span class="n">YEAR</span><span class="p">,</span>
+        <span class="k">for</span> <span class="n">payload</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ACS</span><span class="o">.</span><span class="n">YEAR</span><span class="p">,</span>
                                          <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
                                                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fipsList</span><span class="p">])),</span>
                                          <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">fipsList</span><span class="p">]))):</span>
             <span class="c1"># append subject item id to the end</span>
             <span class="n">subjectList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
             <span class="n">detailList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
-            <span class="n">subjectList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Census</span><span class="o">.</span><span class="n">SUBJECT_LIST</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-            <span class="n">detailList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">Census</span><span class="o">.</span><span class="n">DETAIL_LIST</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">subjectList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ACS</span><span class="o">.</span><span class="n">SUBJECT_LIST</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">detailList</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">ACS</span><span class="o">.</span><span class="n">DETAIL_LIST</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
             <span class="n">ACSPayloadDict</span><span class="p">[</span><span class="s2">&quot;SUBJECT&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subjectList</span><span class="p">)</span>
             <span class="n">ACSPayloadDict</span><span class="p">[</span><span class="s2">&quot;DETAIL&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">detailList</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ACSPayloadDict</span></div>
+
+
+<span class="c1"># conf = Config()</span>
+<span class="c1"># conf.BLS.API_KEY = &quot;5a0e1a49d56d402d8331feac501593dd&quot;</span>
+<span class="c1"># conf.BLS.TABLE_NUMBER = [&quot;ENU&quot;, &quot;LA&quot;]</span>
+<span class="c1"># dl = Downloader([&quot;BLS&quot;], [&#39;26161&#39;, &#39;26163&#39;], config=conf)</span>
+<span class="c1"># dl.download()</span>
+<span class="c1"># print(dl.data)</span>
 </pre></div>
 
           </div>

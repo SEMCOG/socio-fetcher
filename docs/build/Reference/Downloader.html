@@ -193,7 +193,7 @@ value: socioFetcher.GeoDataFrame</p>
 
 <dl class="method">
 <dt id="socioFetcher.downloader.Downloader.export">
-<code class="sig-name descname">export</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">summarize=False</em>, <em class="sig-param">by='geography'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.export" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">export</code><span class="sig-paren">(</span><em class="sig-param">path</em>, <em class="sig-param">summarize=False</em>, <em class="sig-param">by='geography'</em>, <em class="sig-param">saveformat='csv'</em>, <em class="sig-param">orient='index'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/socioFetcher/downloader.html#Downloader.export"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#socioFetcher.downloader.Downloader.export" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save downloaded data to specified path</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -201,6 +201,9 @@ value: socioFetcher.GeoDataFrame</p>
 <li><p><strong>path</strong> (<em>str</em>) -- Abosolute path to a folder where files will be saved</p></li>
 <li><p><strong>summarize</strong> (<em>bolean</em><em>, </em><em>optional</em>) -- Save summarized data, default is False</p></li>
 <li><p><strong>by</strong> (<em>str</em>) -- Summarize option, one of geography and dataset</p></li>
+<li><p><strong>saveformat</strong> (<em>str</em>) -- Export format, &quot;csv&quot; or &quot;json&quot;</p></li>
+<li><p><strong>orient</strong> (<em>str</em>) -- Only apply to json export, define orient for json export
+visit <a class="reference external" href="https://pandas.pydata.org/pandas-docs/version/0.24.2/reference/api/pandas.DataFrame.to_json.html">https://pandas.pydata.org/pandas-docs/version/0.24.2/reference/api/pandas.DataFrame.to_json.html</a></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

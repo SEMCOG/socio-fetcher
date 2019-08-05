@@ -82,6 +82,10 @@
 <span class="sd">        Size category to download</span>
 <span class="sd">    OWNERSHIP : list of str</span>
 <span class="sd">        Ownership type to download</span>
+<span class="sd">    SEASONAL_ADJUST_CODE : list of str</span>
+<span class="sd">        List of all codes: https://download.bls.gov/pub/time.series/la/la.measure</span>
+<span class="sd">    MEASURE_CODE : dict  {code=&gt;name}</span>
+<span class="sd">        List of all codes: https://download.bls.gov/pub/time.series/la/la.measure</span>
 <span class="sd">    START_YEAR : str</span>
 <span class="sd">        Start year of the query </span>
 <span class="sd">    END_YEAR : str</span>
@@ -114,6 +118,17 @@
             <span class="s2">&quot;1027&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1027 Other services&quot;</span><span class="p">,</span>
             <span class="s2">&quot;1029&quot;</span>	<span class="p">:</span> <span class="s2">&quot;1029 Unclassified&quot;</span>
         <span class="p">}</span>
+        <span class="c1"># Local Area Unemployment Statistics</span>
+        <span class="c1"># &quot;U&quot; unadjusted, &quot;S&quot; Seasonal adjusted</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SEASONAL_ADJUST_CODE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;U&quot;</span><span class="p">]</span>
+        <span class="c1"># Area code list https://download.bls.gov/pub/time.series/la/la.area</span>
+        <span class="c1"># Masure code https://download.bls.gov/pub/time.series/la/la.measure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MEASURE_CODE</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;03&quot;</span><span class="p">:</span>	<span class="s2">&quot;unemployment rate&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;04&quot;</span><span class="p">:</span>	<span class="s2">&quot;unemployment&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;05&quot;</span><span class="p">:</span>	<span class="s2">&quot;employment&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;06&quot;</span><span class="p">:</span>	<span class="s2">&quot;labor force&quot;</span>
+        <span class="p">}</span>
         <span class="c1"># Start and End year of query, eariest year is 2001</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">START_YEAR</span> <span class="o">=</span> <span class="s2">&quot;2001&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">END_YEAR</span> <span class="o">=</span> <span class="s2">&quot;2018&quot;</span></div>
@@ -121,7 +136,8 @@
 
 <div class="viewcode-block" id="BEA"><a class="viewcode-back" href="../../Reference/Config.html#socioFetcher.config.BEA">[docs]</a><span class="k">class</span> <span class="nc">BEA</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to hold all BEA settings for the downloader</span>
+<span class="sd">    Class to hold all BEA settings for the downloader, for details about</span>
+<span class="sd">    table and its attributes, visit https://apps.bea.gov/itable/iTable.cfm?ReqID=70&amp;step=1</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
@@ -147,7 +163,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">API_KEY</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># Per capita personal income (dollars) 2/</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">LINE_CODE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;3&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LINE_CODE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;3&quot;</span><span class="p">]</span>  <span class="c1"># 3 – Per capita personal income (dollars)</span>
         <span class="c1"># Personal Income Summary: Personal Income, Population, Per Capita Personal Income</span>
         <span class="c1"># https://apps.bea.gov/api/data/?&amp;UserID=4040651D-C3D5-4A2F-AEE5-23CD52AF863C&amp;method=getparametervalues&amp;datasetname=Regionalproduct&amp;parametername=industryid&amp;dataformat=xml</span>
         <span class="c1"># Personal Income Summary: Personal Income, Population, Per Capita Personal Income (Non-Industry)</span>
@@ -162,7 +178,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">GDP_YEAR</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ALL&quot;</span><span class="p">]</span>          <span class="c1"># all year</span></div>
 
 
-<div class="viewcode-block" id="Census"><a class="viewcode-back" href="../../Reference/Config.html#socioFetcher.config.Census">[docs]</a><span class="k">class</span> <span class="nc">Census</span><span class="p">:</span>
+<div class="viewcode-block" id="ACS"><a class="viewcode-back" href="../../Reference/Config.html#socioFetcher.config.ACS">[docs]</a><span class="k">class</span> <span class="nc">ACS</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to hold all ACS(Census) settings for the downloader</span>
 
@@ -175,19 +191,18 @@
 <span class="sd">        &quot;2013&quot;, &quot;2014&quot;, &quot;2015&quot;, &quot;2016&quot;, &quot;2017&quot;]</span>
 <span class="sd">    SUBJECT_LIST : dict  {SUBJECT_ID=&gt;SUBJECT_NAME}</span>
 <span class="sd">        Subject id list to download, default is {</span>
-<span class="sd">            # only available in ACS5</span>
-<span class="sd">            &quot;S0102_C01_036E&quot;: &quot;Some college or associate&#39;s degree&quot;,</span>
-<span class="sd">            # only available in ACS5</span>
-<span class="sd">            &quot;S0102_C01_037E&quot;: &quot;Bachelor&#39;s degree or higher&quot;,</span>
-<span class="sd">            &quot;S0101_C01_001E&quot;: &quot;Total population&quot;,</span>
-<span class="sd">            &quot;S0102_C01_087E&quot;: &quot;Under proverty line&quot;,  # only available in ACS5</span>
+<span class="sd">        # only available in ACS5</span>
+<span class="sd">        &quot;S0102_C01_036E&quot;: &quot;Some college or associate&#39;s degree&quot;,</span>
+<span class="sd">        # only available in ACS5</span>
+<span class="sd">        &quot;S0102_C01_037E&quot;: &quot;Bachelor&#39;s degree or higher&quot;,</span>
+<span class="sd">        &quot;S0101_C01_001E&quot;: &quot;Total population&quot;,</span>
+<span class="sd">        &quot;S0102_C01_087E&quot;: &quot;Under proverty line&quot;,  # only available in ACS5</span>
 <span class="sd">        }</span>
 <span class="sd">    DETAIL_LIST : dict  {Detail_ID=&gt;Detail_NAME}</span>
 <span class="sd">        Detail id list to download, default is {</span>
-<span class="sd">            &quot;C17016_001E&quot;: &quot;Total Household&quot;,  # only in acs1</span>
-<span class="sd">            &quot;C17016_002E&quot;: &quot;Household Below poverty level&quot;  # only in acs1</span>
+<span class="sd">        &quot;C17016_001E&quot;: &quot;Total Household&quot;,  # only in acs1</span>
+<span class="sd">        &quot;C17016_002E&quot;: &quot;Household Below poverty level&quot;  # only in acs1</span>
 <span class="sd">        }</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -212,14 +227,14 @@
 
 <div class="viewcode-block" id="Config"><a class="viewcode-back" href="../../Reference/Config.html#socioFetcher.config.Config">[docs]</a><span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to hold all ACS(Census) settings for the downloader</span>
+<span class="sd">    Class to hold all settings for the downloader</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
 <span class="sd">    Global : socioFetcher.config.Global</span>
 <span class="sd">    BLS : socioFetcher.config.BLS</span>
 <span class="sd">    BEA : socioFetcher.config.BEA</span>
-<span class="sd">    Census : socioFetcher.config.Census</span>
+<span class="sd">    ACS : socioFetcher.config.ACS</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -227,7 +242,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">Global</span> <span class="o">=</span> <span class="n">Global</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">BLS</span> <span class="o">=</span> <span class="n">BLS</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">BEA</span> <span class="o">=</span> <span class="n">BEA</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">Census</span> <span class="o">=</span> <span class="n">Census</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ACS</span> <span class="o">=</span> <span class="n">ACS</span><span class="p">()</span></div>
 </pre></div>
 
           </div>
