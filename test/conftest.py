@@ -22,5 +22,5 @@ def config(BLS_TEST_API_KEY, BEA_TEST_API_KEY, CENSUS_TEST_API_KEY):
     config = Config()
     config.BLS.API_KEY = BLS_TEST_API_KEY
     config.BEA.API_KEY = BEA_TEST_API_KEY
-    config.Census.API_KEY = CENSUS_TEST_API_KEY
+    config.ACS.API_KEY = CENSUS_TEST_API_KEY
     return config

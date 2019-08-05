@@ -49,6 +49,10 @@ class BLS:
         Size category to download
     OWNERSHIP : list of str
         Ownership type to download
+    SEASONAL_ADJUST_CODE : list of str
+        List of all codes: https://download.bls.gov/pub/time.series/la/la.measure
+    MEASURE_CODE : dict  {code=>name}
+        List of all codes: https://download.bls.gov/pub/time.series/la/la.measure
     START_YEAR : str
         Start year of the query 
     END_YEAR : str
@@ -81,6 +85,17 @@ class BLS:
             "1027"	: "1027 Other services",
             "1029"	: "1029 Unclassified"
         }
+        # Local Area Unemployment Statistics
+        # "U" unadjusted, "S" Seasonal adjusted
+        self.SEASONAL_ADJUST_CODE = ["U"]
+        # Area code list https://download.bls.gov/pub/time.series/la/la.area
+        # Masure code https://download.bls.gov/pub/time.series/la/la.measure
+        self.MEASURE_CODE = {
+            "03":	"unemployment rate",
+            "04":	"unemployment",
+            "05":	"employment",
+            "06":	"labor force"
+        }
         # Start and End year of query, eariest year is 2001
         self.START_YEAR = "2001"
         self.END_YEAR = "2018"
@@ -88,7 +103,8 @@ class BLS:
 
 class BEA:
     """
-    Class to hold all BEA settings for the downloader
+    Class to hold all BEA settings for the downloader, for details about
+    table and its attributes, visit https://apps.bea.gov/itable/iTable.cfm?ReqID=70&step=1
 
     Attributes
     ----------
@@ -114,7 +130,7 @@ class BEA:
     def __init__(self):
         self.API_KEY = None
         # Per capita personal income (dollars) 2/
-        self.LINE_CODE = ["3"]
+        self.LINE_CODE = ["3"]  # 3 – Per capita personal income (dollars)
         # Personal Income Summary: Personal Income, Population, Per Capita Personal Income
         # https://apps.bea.gov/api/data/?&UserID=4040651D-C3D5-4A2F-AEE5-23CD52AF863C&method=getparametervalues&datasetname=Regionalproduct&parametername=industryid&dataformat=xml
         # Personal Income Summary: Personal Income, Population, Per Capita Personal Income (Non-Industry)
@@ -129,7 +145,7 @@ class BEA:
         self.GDP_YEAR = ["ALL"]          # all year
 
 
-class Census:
+class ACS:
     """
     Class to hold all ACS(Census) settings for the downloader
 
@@ -179,14 +195,14 @@ class Census:
 
 class Config:
     """
-    Class to hold all ACS(Census) settings for the downloader
+    Class to hold all settings for the downloader
 
     Attributes
     ----------
     Global : socioFetcher.config.Global
     BLS : socioFetcher.config.BLS
     BEA : socioFetcher.config.BEA
-    Census : socioFetcher.config.Census
+    ACS : socioFetcher.config.ACS
 
     """
 
@@ -194,4 +210,4 @@ class Config:
         self.Global = Global()
         self.BLS = BLS()
         self.BEA = BEA()
-        self.Census = Census()
+        self.ACS = ACS()

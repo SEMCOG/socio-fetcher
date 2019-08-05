@@ -6,6 +6,7 @@ import pandas as pd
 import json
 import warnings
 import time
+import re
 from socioFetcher.config import Config
 from socioFetcher.geodataframe import GeoDataFrame
 from socioFetcher.mapview import MapView
@@ -88,7 +89,7 @@ class Downloader:
             for fips, geoDf in res.items():
                 self.data[fips][dataset] = geoDf
 
-    def export(self, path, summarize=False, by="geography"):
+    def export(self, path, summarize=False, by="geography", saveformat="csv", orient="index"):
         """
         Save downloaded data to specified path
 
@@ -100,6 +101,11 @@ class Downloader:
             Save summarized data, default is False
         by:str
             Summarize option, one of geography and dataset
+        saveformat:str
+            Export format, "csv" or "json"
+        orient:str
+            Only apply to json export, define orient for json export
+            visit https://pandas.pydata.org/pandas-docs/version/0.24.2/reference/api/pandas.DataFrame.to_json.html
 
         Returns
         ----------
@@ -113,22 +119,40 @@ class Downloader:
                 for datasetName, geoDf in obj.items():
                     savePath = os.path.join(path, areaName)
                     os.makedirs(savePath, exist_ok=True)
-                    geoDf.DataFrame.to_csv(
-                        os.path.join(savePath, f"{datasetName}.csv")
-                    )
+                    if saveformat.lower() == "csv":
+                        geoDf.DataFrame.to_csv(
+                            os.path.join(savePath, f"{datasetName}.csv")
+                        )
+                    else:
+                        geoDf.DataFrame.to_json(
+                            os.path.join(savePath, f"{datasetName}.json"),
+                            orient=orient
+                        )
         else:
             summary = self.summarize(by=by)
             if by.lower() == "geography":
                 for areaID, Df in summary.items():
                     areaName = self.config.Global.FIPS_CODE[areaID]
-                    Df.to_csv(
-                        os.path.join(path, f"{areaName}.csv")
-                    )
+                    if saveformat.lower() == "csv":
+                        Df.to_csv(
+                            os.path.join(path, f"{areaName}.csv")
+                        )
+                    else:
+                        Df.to_json(
+                            os.path.join(path, f"{areaName}.json"),
+                            orient=orient
+                        )
             elif by.lower() == "dataset":
                 for datasetName, Df in summary.items():
-                    Df.to_csv(
-                        os.path.join(path, f"{datasetName}.csv")
-                    )
+                    if saveformat.lower() == "csv":
+                        Df.to_csv(
+                            os.path.join(path, f"{datasetName}.csv")
+                        )
+                    else:
+                        Df.to_json(
+                            os.path.join(path, f"{datasetName}.json"),
+                            orient=orient
+                        )
 
     def summarize(self, by="geography"):
         """
@@ -214,12 +238,14 @@ class Downloader:
                 orient="dict")
             for attrID, attrdict in areaDatasetDict.items():
                 if dataset.upper() == 'BLS':
-                    attrName = self.config.BLS.NAICS_CODE_LIST[attrID]
+                    blsAttrLookUp = {
+                        **self.config.BLS.NAICS_CODE_LIST, **self.config.BLS.MEASURE_CODE}
+                    attrName = blsAttrLookUp[attrID]
                 elif dataset.upper() == 'ACS':
-                    if attrID in self.config.Census.SUBJECT_LIST.keys():
-                        attrName = self.config.Census.SUBJECT_LIST[attrID]
+                    if attrID in self.config.ACS.SUBJECACS.keys():
+                        attrName = self.config.ACS.SUBJECACS[attrID]
                     else:
-                        attrName = self.config.Census.DETAIL_LIST[attrID]
+                        attrName = self.config.ACS.DETAIACS[attrID]
                 else:
                     attrName = attrID
                 if not attrName in choro_data.keys():
@@ -320,14 +346,14 @@ class Downloader:
         # Initialize session and default data
         s = requests.Session()
         s.headers = {'Content-type': 'application/json'}
+        p = re.compile(r"[A-Z]+\d{5}")
         for srsList in tqdm(seriesListChunk, desc="Download BLS data"):
-            data = json.dumps(
-                {"seriesid": srsList,
-                 "startyear": self.config.BLS.START_YEAR,
-                 "endyear": self.config.BLS.END_YEAR,
-                 "registrationkey": self.config.BLS.API_KEY,
-                 "calculations": "true",
-                 "annualaverage": "true"})
+            data = json.dumps({"seriesid": srsList,
+                               "startyear": self.config.BLS.START_YEAR,
+                               "endyear": self.config.BLS.END_YEAR,
+                               "registrationkey": self.config.BLS.API_KEY,
+                               "calculations": "true",
+                               "annualaverage": "true"})
             r = s.post(
                 'https://api.bls.gov/publicAPI/v2/timeseries/data/',
                 data=data)
@@ -341,8 +367,11 @@ class Downloader:
                     data=data, headers=headers)
             json_data = r.json()
             for seriesResult in json_data["Results"]["series"]:
-                areaCode = seriesResult["seriesID"][3:8]
+                m = p.match(seriesResult["seriesID"])
+                areaCode = m.group()[-5:]
                 geoClassDict[areaCode].load(seriesResult)
+                # geoClassDict[areaCode].DataFrame = geoClassDict[areaCode].DataFrame.rename(
+                #     self.config.BLS.MEASURE_CODE, axis=1)
         return geoClassDict
 
     def downloadBEAIncome(self):
@@ -464,7 +493,7 @@ class Downloader:
         # Initialize session and default data
         s = requests.Session()
         s.params = {
-            "key": self.config.Census.API_KEY
+            "key": self.config.ACS.API_KEY
         }
         for sbjPay in tqdm(subjectPayload, desc="Download ACS Subject Table"):
             getSbjStr = ""
@@ -529,20 +558,32 @@ class Downloader:
         Helper function to Generate Series List form given parameter list
         """
         seriesList = []
-        for sridTup in itertools.product(self.config.BLS.TABLE_NUMBER,
-                                         self.fipsList,
-                                         self.config.BLS.DATA_TYPE,
-                                         self.config.BLS.SIZE,
-                                         self.config.BLS.OWNERSHIP,
-                                         self.config.BLS.NAICS_CODE_LIST.keys()):
-            sridList = list(sridTup)
-            if sridList[-1] == "10":
-                # if is Total, change ownership to all
-                sridList[-2] = "0"
-            srid = ""
-            for item in sridList:
-                srid += item
-            seriesList.append(srid)
+        # State and County Employment and Wages(Quarterly Census of Employment & Wages - QCEW)
+        if "ENU" in self.config.BLS.TABLE_NUMBER:
+            for sridTup in itertools.product(self.fipsList,
+                                             self.config.BLS.DATA_TYPE,
+                                             self.config.BLS.SIZE,
+                                             self.config.BLS.OWNERSHIP,
+                                             self.config.BLS.NAICS_CODE_LIST.keys()):
+                sridList = list(sridTup)
+                if sridList[-1] == "10":
+                    # if is Total, change ownership to all
+                    sridList[-2] = "0"
+                srid = "ENU"
+                for item in sridList:
+                    srid += item
+                seriesList.append(srid)
+        if "LA" in self.config.BLS.TABLE_NUMBER:
+            for sridTup in itertools.product(self.config.BLS.SEASONAL_ADJUST_CODE,
+                                             self.fipsList,
+                                             self.config.BLS.MEASURE_CODE.keys()):
+                sridList = list(sridTup)
+                # Convert fipscode to area code
+                sridList[1] = f"CN{sridList[1]}00000000"
+                srid = "LA"
+                for item in sridList:
+                    srid += item
+                seriesList.append(srid)
         return seriesList
 
     def _getBEAIncomePayload(self):
@@ -577,15 +618,23 @@ class Downloader:
             "SUBJECT": [],
             "DETAIL": []
         }
-        for payload in itertools.product(self.config.Census.YEAR,
+        for payload in itertools.product(self.config.ACS.YEAR,
                                          list(set([x[2:]
                                                    for x in self.fipsList])),
                                          list(set([x[:2] for x in self.fipsList]))):
             # append subject item id to the end
             subjectList = list(payload)
             detailList = list(payload)
-            subjectList.append(self.config.Census.SUBJECT_LIST.keys())
-            detailList.append(self.config.Census.DETAIL_LIST.keys())
+            subjectList.append(self.config.ACS.SUBJECT_LIST.keys())
+            detailList.append(self.config.ACS.DETAIL_LIST.keys())
             ACSPayloadDict["SUBJECT"].append(subjectList)
             ACSPayloadDict["DETAIL"].append(detailList)
         return ACSPayloadDict
+
+
+# conf = Config()
+# conf.BLS.API_KEY = "5a0e1a49d56d402d8331feac501593dd"
+# conf.BLS.TABLE_NUMBER = ["ENU", "LA"]
+# dl = Downloader(["BLS"], ['26161', '26163'], config=conf)
+# dl.download()
+# print(dl.data)

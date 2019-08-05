@@ -32,6 +32,10 @@ Todo
 
 Log
 --------------
+- 08/05 
+    - Add BLS unEmployment data download feature,
+    - add related config setting
+    - Add export to json options
 - 08/01 
     - Add gettingstarted and installation pages in docs
     - Remove all credentials in the config and edit .gitigonore to exclude test folder

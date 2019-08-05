@@ -96,12 +96,12 @@ class GeoDataFrame:
         ------------
         pandas.Series
         """
-        naicsCode = data["seriesID"][11:]  # NAICS code start at 12
-        d = pd.Series(name=naicsCode)
+        attrName = data["seriesID"][-2:] if data["seriesID"][11] == "0" else data["seriesID"][11:]
+        d = pd.Series(name=attrName)
         for dd in data['data']:
             if dd["period"] == "M13":
                 try:
-                    d[dd["year"]] = int(dd["value"].replace(",", ""))
+                    d[dd["year"]] = float(dd["value"].replace(",", ""))
                 except:
                     Warning(f"Unable to parse {dd['value']} in {dd['year']}")
                     d[dd["year"]] = 0
