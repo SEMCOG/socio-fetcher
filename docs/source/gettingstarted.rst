@@ -26,7 +26,7 @@ to provide required api_key for each requested dataset.
   myConfig = Config()
   myConfig.BLS.API_KEY = "bls_api_key_goes_here"
   myConfig.BEA.API_KEY = "bea_api_key_goes_here"
-  myConfig.Census.API_KEY = "census_api_key_goes_here"
+  myConfig.ACS.API_KEY = "census_api_key_goes_here"
 
 For each requested dataset, we may provide information on what
 table/data we are looking for. For more detail about the required
