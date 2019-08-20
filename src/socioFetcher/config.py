@@ -159,8 +159,9 @@ class ACS:
     SUBJECT_LIST : dict  {SUBJECT_ID=>SUBJECT_NAME}
         Subject id list to download, default is {
         # only available in ACS5
+        "S0102_C01_034E": "Less than high school graduate"
+        "S0102_C01_035E": "High school graduate, GED, or alternative"
         "S0102_C01_036E": "Some college or associate's degree",
-        # only available in ACS5
         "S0102_C01_037E": "Bachelor's degree or higher",
         "S0101_C01_001E": "Total population",
         "S0102_C01_087E": "Under proverty line",  # only available in ACS5
@@ -179,8 +180,9 @@ class ACS:
         # Subject url: https://api.census.gov/data/2017/acs/acs1/subject
         self.SUBJECT_LIST = {
             # only available in ACS5
+            "S0102_C01_034E": "Less than high school graduate",
+            "S0102_C01_035E": "High school graduate, GED, or alternative",
             "S0102_C01_036E": "Some college or associate's degree",
-            # only available in ACS5
             "S0102_C01_037E": "Bachelor's degree or higher",
             "S0101_C01_001E": "Total population",
             "S0102_C01_087E": "Under proverty line",  # only available in ACS5

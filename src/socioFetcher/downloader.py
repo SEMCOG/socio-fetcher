@@ -242,10 +242,10 @@ class Downloader:
                         **self.config.BLS.NAICS_CODE_LIST, **self.config.BLS.MEASURE_CODE}
                     attrName = blsAttrLookUp[attrID]
                 elif dataset.upper() == 'ACS':
-                    if attrID in self.config.ACS.SUBJECACS.keys():
-                        attrName = self.config.ACS.SUBJECACS[attrID]
+                    if attrID in self.config.ACS.SUBJECT_LIST.keys():
+                        attrName = self.config.ACS.SUBJECT_LIST[attrID]
                     else:
-                        attrName = self.config.ACS.DETAIACS[attrID]
+                        attrName = self.config.ACS.DETAIL_LIST[attrID]
                 else:
                     attrName = attrID
                 if not attrName in choro_data.keys():
@@ -630,11 +630,3 @@ class Downloader:
             ACSPayloadDict["SUBJECT"].append(subjectList)
             ACSPayloadDict["DETAIL"].append(detailList)
         return ACSPayloadDict
-
-
-# conf = Config()
-# conf.BLS.API_KEY = "5a0e1a49d56d402d8331feac501593dd"
-# conf.BLS.TABLE_NUMBER = ["ENU", "LA"]
-# dl = Downloader(["BLS"], ['26161', '26163'], config=conf)
-# dl.download()
-# print(dl.data)
