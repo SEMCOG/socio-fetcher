@@ -482,70 +482,45 @@ class Downloader:
             value: socioFetcher.GeoDataFrame
         """
         geoClassDict = {}
-        detGeoClassDict = {}
         for areaID in self.fipsList:
             name = self.config.Global.FIPS_CODE[areaID]
             geoClassDict[areaID] = GeoDataFrame(name, dataset="ACS")
-            detGeoClassDict[areaID] = GeoDataFrame(name, dataset="ACS")
         ACSPayload = self._getACSPayload()
-        subjectPayload = ACSPayload["SUBJECT"]
-        detailPayload = ACSPayload["DETAIL"]
         # Initialize session and default data
         s = requests.Session()
         s.params = {
             "key": self.config.ACS.API_KEY
         }
-        for sbjPay in tqdm(subjectPayload, desc="Download ACS Subject Table"):
-            getSbjStr = ""
-            for att in sbjPay[-1]:
-                getSbjStr += att+","
-            payload = {
-                "get": getSbjStr[:-1],  # remove the last comma
-                "for": "county:"+sbjPay[1],
-                "in": "state:"+sbjPay[2]
-            }
-            s.params.update(payload)
-            r = s.get(
-                f"https://api.census.gov/data/{sbjPay[0]}/acs/acs5/subject")
-            while r.status_code != requests.codes.ok:
-                warnings.warn(
-                    f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
-                    ResourceWarning)
-                time.sleep(10)
+        for payload in tqdm(ACSPayload, desc="Download ACS Table"):
+            for field in payload[-1]:
+                fieldID = field["id"]
+                year = payload[0]
+                acs = "acs1" if field["availability"]["acs1"] else "acs5"
+                subject = "subject" if field["availability"]["subject"] else ""
+                requestpayload = {
+                    "get": fieldID,
+                    "for": "county:"+payload[1],
+                    "in": "state:"+payload[2]
+                }
+                s.params.update(requestpayload)
                 r = s.get(
-                    f"https://api.census.gov/data/{sbjPay[0]}/acs/acs5/subject")
-            json_data = r.json()
-            areaCode = sbjPay[2]+sbjPay[1]
-            geoClassDict[areaCode].load(
-                json_data, source="ACS", year=sbjPay[0])
+                    f"https://api.census.gov/data/{year}/acs/{acs}/{subject}")
+                n_retry = 0
+                while r.status_code != requests.codes.ok:
+                    print(f"Request fail when requesting {r.url}")
+                    warnings.warn(
+                        f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
+                        ResourceWarning)
+                    time.sleep(10)
+                    r = s.get(
+                        f"https://api.census.gov/data/{year}/acs/{acs}/{subject}")
+                json_data = r.json()
+                areaCode = payload[2]+payload[1]
+                geoClassDict[areaCode].load(
+                    json_data, source="ACS", year=year, endyear=self.config.ACS.YEAR[-1])
 
-        for detPay in tqdm(detailPayload, desc="Download ACS Detail Table"):
-            getDetStr = ""
-            for att in detPay[-1]:
-                getDetStr += att+","
-            payload = {
-                "get": getDetStr[:-1],  # remove the last comma
-                "for": "county:"+detPay[1],
-                "in": "state:"+detPay[2]
-            }
-            r = s.get(f"https://api.census.gov/data/{detPay[0]}/acs/acs1",
-                      params=payload)
-            while r.status_code != requests.codes.ok:
-                warnings.warn(
-                    f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
-                    ResourceWarning)
-                time.sleep(10)
-                r = s.get(f"https://api.census.gov/data/{detPay[0]}/acs/acs1")
-            json_data = r.json()
-            areaCode = detPay[2]+detPay[1]
-            detGeoClassDict[detPay[2]+detPay[1]].load(
-                json_data, source="ACS", year=detPay[0])
         # merge two dicts
         for key, _ in geoClassDict.items():
-            geoClassDict[key].DataFrame = pd.concat(
-                [geoClassDict[key].DataFrame,
-                 detGeoClassDict[key].DataFrame],
-                axis=1, sort=True)
             if "state" in geoClassDict[key].DataFrame.columns:
                 del geoClassDict[key].DataFrame["state"]
             if "county" in geoClassDict[key].DataFrame.columns:
@@ -614,19 +589,22 @@ class Downloader:
         """
         Helper function to Generate Series List form given parameter list
         """
-        ACSPayloadDict = {
-            "SUBJECT": [],
-            "DETAIL": []
-        }
-        for payload in itertools.product(self.config.ACS.YEAR,
-                                         list(set([x[2:]
-                                                   for x in self.fipsList])),
-                                         list(set([x[:2] for x in self.fipsList]))):
+        ACSPayloadList = []
+        for yearGeoPayload in itertools.product(self.config.ACS.YEAR,
+                                                list(set([x[2:]
+                                                          for x in self.fipsList])),
+                                                list(set([x[:2] for x in self.fipsList]))):
             # append subject item id to the end
-            subjectList = list(payload)
-            detailList = list(payload)
-            subjectList.append(self.config.ACS.SUBJECT_LIST.keys())
-            detailList.append(self.config.ACS.DETAIL_LIST.keys())
-            ACSPayloadDict["SUBJECT"].append(subjectList)
-            ACSPayloadDict["DETAIL"].append(detailList)
-        return ACSPayloadDict
+            yearGeoPayloadList = list(yearGeoPayload)
+            yearGeoPayloadList.append(self.config.ACS.FIELDS)
+            ACSPayloadList.append(yearGeoPayloadList)
+        return ACSPayloadList
+
+
+myConfig = Config()
+myConfig.ACS.API_KEY = "a1b79f5105b689bd9c4ed357de83130393b6dec7"
+
+datasets = ["ACS"]
+fips = {"26093": "Livingston,MI"}
+dl = Downloader(datasets, list(fips.keys()), config=myConfig)
+dl.download()

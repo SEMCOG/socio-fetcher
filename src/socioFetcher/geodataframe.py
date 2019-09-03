@@ -33,12 +33,13 @@ class GeoDataFrame:
         self.dataset = dataset
         #self.loadedBLSSeriesID = []
         self.DataFrame = pd.DataFrame()
+        self._tempDataFrame = pd.DataFrame()
 
     def __str__(self):
         self.__repr__ = self.__str__
         return self.county
 
-    def load(self, data, source="BLS", year=None):
+    def load(self, data, source="BLS", year=None, endyear=None):
         """
         Load dict data response from API, and update 
         countyData
@@ -77,11 +78,23 @@ class GeoDataFrame:
                                            axis=1, sort=True)
         elif source.upper() == "ACS" and self.dataset == "ACS":
             parsedData = self.ACSParser(data, year=year)
-            if self.DataFrame.shape[0] == 0:
-                self.DataFrame = parsedData
+            if self._tempDataFrame.shape[0] == 0:
+                self._tempDataFrame = parsedData
+            elif year == self._tempDataFrame.index[0]:
+                self._tempDataFrame = pd.concat([self._tempDataFrame, parsedData],
+                                                axis=1, sort=True)
+                if len(self._tempDataFrame.columns) == len(self.DataFrame.columns) and year == endyear:
+                    self.DataFrame = pd.concat([self.DataFrame, self._tempDataFrame],
+                                               axis=0)
+            elif year is not self._tempDataFrame.index[0]:
+                if self.DataFrame.shape[0] == 0:
+                    self.DataFrame = self._tempDataFrame
+                else:
+                    self.DataFrame = pd.concat([self.DataFrame, self._tempDataFrame],
+                                               axis=0)
+                self._tempDataFrame = parsedData
             else:
-                self.DataFrame = pd.concat([self.DataFrame, parsedData],
-                                           axis=0, sort=True)
+                print("exception happens when concating ACS data")
 
     def BLSParser(self, data):
         """

@@ -156,21 +156,24 @@ class ACS:
     YEAR : list of str
         Year list to download ACS data, defualt is ["2010", "2011", "2012",
         "2013", "2014", "2015", "2016", "2017"]
-    SUBJECT_LIST : dict  {SUBJECT_ID=>SUBJECT_NAME}
-        Subject id list to download, default is {
-        # only available in ACS5
-        "S0102_C01_034E": "Less than high school graduate"
-        "S0102_C01_035E": "High school graduate, GED, or alternative"
-        "S0102_C01_036E": "Some college or associate's degree",
-        "S0102_C01_037E": "Bachelor's degree or higher",
-        "S0101_C01_001E": "Total population",
-        "S0102_C01_087E": "Under proverty line",  # only available in ACS5
-        }
-    DETAIL_LIST : dict  {Detail_ID=>Detail_NAME}
-        Detail id list to download, default is {
-        "C17016_001E": "Total Household",  # only in acs1
-        "C17016_002E": "Household Below poverty level"  # only in acs1
-        }
+    FIELDS : dict   List of field object containing information about the requesting field
+        1. id : str: ID of the field
+        2. desc : str: description of the field
+        3. availability : dict
+            1. acs1 : bolean : Is is available in ACS1,
+            2. subject : bolean : Is is abailable in subject table
+        Example: 
+        [
+            {
+                "id": "S0102_C01_034E",
+                "desc": "Less than high school graduate",
+                "availability": {
+                    "acs1": False,
+                    "subject": True
+                }
+            },
+        ...
+        ]
     """
 
     def __init__(self):
@@ -178,20 +181,72 @@ class ACS:
         self.YEAR = ["2010", "2011", "2012",
                      "2013", "2014", "2015", "2016", "2017"]
         # Subject url: https://api.census.gov/data/2017/acs/acs1/subject
-        self.SUBJECT_LIST = {
-            # only available in ACS5
-            "S0102_C01_034E": "Less than high school graduate",
-            "S0102_C01_035E": "High school graduate, GED, or alternative",
-            "S0102_C01_036E": "Some college or associate's degree",
-            "S0102_C01_037E": "Bachelor's degree or higher",
-            "S0101_C01_001E": "Total population",
-            "S0102_C01_087E": "Under proverty line",  # only available in ACS5
-        }
-        # Detail url: https://api.census.gov/data/2017/acs/acs1
-        self.DETAIL_LIST = {
-            "C17016_001E": "Total Household",  # only in acs1
-            "C17016_002E": "Household Below poverty level"  # only in acs1
-        }
+        self.FIELDS = [
+            {
+                "id": "S0102_C01_034E",
+                "desc": "Less than high school graduate",
+                "availability": {
+                    "acs1": False,
+                    "subject": True
+                }
+            },
+            {
+                "id": "S0102_C01_035E",
+                "desc": "High school graduate, GED, or alternative",
+                "availability": {
+                    "acs1": False,
+                    "subject": True
+                }
+            },
+            {
+                "id": "S0102_C01_036E",
+                "desc": "Some college or associate's degree",
+                "availability": {
+                    "acs1": False,
+                    "subject": True
+                }
+            },
+            {
+                "id": "S0102_C01_037E",
+                "desc": "Bachelor's degree or higher",
+                "availability": {
+                    "acs1": False,
+                    "subject": True
+                }
+            },
+            {
+                "id": "S0101_C01_001E",
+                "desc": "Total population",
+                "availability": {
+                    "acs1": True,
+                    "subject": True
+                }
+            },
+            {
+                "id": "S0102_C01_087E",
+                "desc": "Under proverty line",
+                "availability": {
+                    "acs1": False,
+                    "subject": True
+                }
+            },
+            {
+                "id": "C17016_001E",
+                "desc": "Total Household",
+                "availability": {
+                    "acs1": True,
+                    "subject": False
+                }
+            },
+            {
+                "id": "C17016_002E",
+                "desc": "Household Below poverty level",
+                "availability": {
+                    "acs1": True,
+                    "subject": False
+                }
+            }
+        ]
 
 
 class Config:

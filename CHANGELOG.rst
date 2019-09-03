@@ -28,10 +28,11 @@ Expected use
 
 Todo
 --------------
-- Migrate repo to SEMCOG account, 
+- None
 
 Log
 --------------
+- 09/03 Reformat ACS Config and refactor ACS downloader
 - 08/05 
     - Add BLS unEmployment data download feature,
     - add related config setting
