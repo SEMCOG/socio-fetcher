@@ -357,7 +357,8 @@ class Downloader:
             r = s.post(
                 'https://api.bls.gov/publicAPI/v2/timeseries/data/',
                 data=data)
-            while r.status_code != requests.codes.ok:
+            n_retry = 0
+            while r.status_code != requests.codes.ok and n_retry<10:
                 warnings.warn(
                     f"Request server fail with error code {str(r.status_code)}, sleep 10 sec",
                     ResourceWarning)
@@ -365,6 +366,7 @@ class Downloader:
                 r = s.post(
                     'https://api.bls.gov/publicAPI/v2/timeseries/data/',
                     data=data, headers=headers)
+                n_retry+=1
             json_data = r.json()
             for seriesResult in json_data["Results"]["series"]:
                 m = p.match(seriesResult["seriesID"])
@@ -409,12 +411,14 @@ class Downloader:
             }
             s.params.update(payload)
             r = s.get("https://apps.bea.gov/api/data/")
-            while r.status_code != requests.codes.ok:
+            n_retry = 0
+            while r.status_code != requests.codes.ok and n_retry < 10:
                 warnings.warn(
                     f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
                 r = s.get("https://apps.bea.gov/api/data/")
+                n_retry += 1
             json_data = r.json()
             areaCode = BEApaylaod[0]
             geoClassDict[areaCode].load(json_data, source="BEA")
@@ -455,12 +459,15 @@ class Downloader:
             }
             s.params.update(payload)
             r = s.get("https://apps.bea.gov/api/data/")
-            while r.status_code != requests.codes.ok:
+            n_retry = 0
+            while r.status_code != requests.codes.ok and n_retry < 10:
+                print(f"Request fail when requesting {r.url}")
                 warnings.warn(
                     f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
                     ResourceWarning)
                 time.sleep(10)
                 r = s.get("https://apps.bea.gov/api/data/")
+                n_retry += 1
             json_data = r.json()
             areaCode = BEApaylaod[0]
             GDPdataDict[BEApaylaod[0]].load(json_data, source="BEAGDP")
@@ -506,7 +513,7 @@ class Downloader:
                 r = s.get(
                     f"https://api.census.gov/data/{year}/acs/{acs}/{subject}")
                 n_retry = 0
-                while r.status_code != requests.codes.ok:
+                while r.status_code != requests.codes.ok and n_retry < 10:
                     print(f"Request fail when requesting {r.url}")
                     warnings.warn(
                         f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
@@ -514,6 +521,7 @@ class Downloader:
                     time.sleep(10)
                     r = s.get(
                         f"https://api.census.gov/data/{year}/acs/{acs}/{subject}")
+                    n_retry += 1
                 json_data = r.json()
                 areaCode = payload[2]+payload[1]
                 geoClassDict[areaCode].load(
@@ -601,10 +609,11 @@ class Downloader:
         return ACSPayloadList
 
 
-myConfig = Config()
-myConfig.ACS.API_KEY = "a1b79f5105b689bd9c4ed357de83130393b6dec7"
+if __name__ == "__main__":
+    myConfig = Config()
+    myConfig.ACS.API_KEY = "a1b79f5105b689bd9c4ed357de83130393b6dec7"
 
-datasets = ["ACS"]
-fips = {"26093": "Livingston,MI"}
-dl = Downloader(datasets, list(fips.keys()), config=myConfig)
-dl.download()
+    datasets = ["ACS"]
+    fips = {"26093": "Livingston,MI"}
+    dl = Downloader(datasets, list(fips.keys()), config=myConfig)
+    dl.download()
