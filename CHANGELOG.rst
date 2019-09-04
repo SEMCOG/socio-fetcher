@@ -28,10 +28,11 @@ Expected use
 
 Todo
 --------------
-- None
+- Update testing for geodataframe 
 
 Log
 --------------
+- 09/04 Reformat ACS Config to include options to choose dataset
 - 09/03 Reformat ACS Config and refactor ACS downloader
 - 08/05 
     - Add BLS unEmployment data download feature,

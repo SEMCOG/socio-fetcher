@@ -358,7 +358,7 @@ class Downloader:
                 'https://api.bls.gov/publicAPI/v2/timeseries/data/',
                 data=data)
             n_retry = 0
-            while r.status_code != requests.codes.ok and n_retry<10:
+            while r.status_code != requests.codes.ok and n_retry < 10:
                 warnings.warn(
                     f"Request server fail with error code {str(r.status_code)}, sleep 10 sec",
                     ResourceWarning)
@@ -366,7 +366,7 @@ class Downloader:
                 r = s.post(
                     'https://api.bls.gov/publicAPI/v2/timeseries/data/',
                     data=data, headers=headers)
-                n_retry+=1
+                n_retry += 1
             json_data = r.json()
             for seriesResult in json_data["Results"]["series"]:
                 m = p.match(seriesResult["seriesID"])
@@ -502,7 +502,8 @@ class Downloader:
             for field in payload[-1]:
                 fieldID = field["id"]
                 year = payload[0]
-                acs = "acs1" if field["availability"]["acs1"] else "acs5"
+                data = field["data"]
+                subcategory = field["availability"]["subcategory"]
                 subject = "subject" if field["availability"]["subject"] else ""
                 requestpayload = {
                     "get": fieldID,
@@ -511,7 +512,7 @@ class Downloader:
                 }
                 s.params.update(requestpayload)
                 r = s.get(
-                    f"https://api.census.gov/data/{year}/acs/{acs}/{subject}")
+                    f"https://api.census.gov/data/{year}/{data}/{subcategory}/{subject}")
                 n_retry = 0
                 while r.status_code != requests.codes.ok and n_retry < 10:
                     print(f"Request fail when requesting {r.url}")
@@ -520,7 +521,7 @@ class Downloader:
                         ResourceWarning)
                     time.sleep(10)
                     r = s.get(
-                        f"https://api.census.gov/data/{year}/acs/{acs}/{subject}")
+                        f"https://api.census.gov/data/{year}/{data}/{subcategory}/{subject}")
                     n_retry += 1
                 json_data = r.json()
                 areaCode = payload[2]+payload[1]

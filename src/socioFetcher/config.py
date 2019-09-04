@@ -157,18 +157,20 @@ class ACS:
         Year list to download ACS data, defualt is ["2010", "2011", "2012",
         "2013", "2014", "2015", "2016", "2017"]
     FIELDS : dict   List of field object containing information about the requesting field
-        1. id : str: ID of the field
-        2. desc : str: description of the field
-        3. availability : dict
-            1. acs1 : bolean : Is is available in ACS1,
-            2. subject : bolean : Is is abailable in subject table
+        1. data : str: Name of Census dataset, now only support "acs" and "pep"
+        2. id : str: ID of the field
+        3. desc : str: description of the field
+        4. availability : dict
+            1. subcategory : str : Subcategory of the survey(e.g. acs1, acs5, ...)
+            2. subject : bolean : Is is abailable in subject table(only apply to ACS)
         Example: 
         [
             {
+                "data": "acs",
                 "id": "S0102_C01_034E",
                 "desc": "Less than high school graduate",
                 "availability": {
-                    "acs1": False,
+                    "subcategory": "acs1",
                     "subject": True
                 }
             },
@@ -183,67 +185,12 @@ class ACS:
         # Subject url: https://api.census.gov/data/2017/acs/acs1/subject
         self.FIELDS = [
             {
-                "id": "S0102_C01_034E",
-                "desc": "Less than high school graduate",
-                "availability": {
-                    "acs1": False,
-                    "subject": True
-                }
-            },
-            {
-                "id": "S0102_C01_035E",
-                "desc": "High school graduate, GED, or alternative",
-                "availability": {
-                    "acs1": False,
-                    "subject": True
-                }
-            },
-            {
-                "id": "S0102_C01_036E",
-                "desc": "Some college or associate's degree",
-                "availability": {
-                    "acs1": False,
-                    "subject": True
-                }
-            },
-            {
-                "id": "S0102_C01_037E",
-                "desc": "Bachelor's degree or higher",
-                "availability": {
-                    "acs1": False,
-                    "subject": True
-                }
-            },
-            {
+                "data": "acs",
                 "id": "S0101_C01_001E",
                 "desc": "Total population",
                 "availability": {
-                    "acs1": True,
+                    "subcategory": "acs1",
                     "subject": True
-                }
-            },
-            {
-                "id": "S0102_C01_087E",
-                "desc": "Under proverty line",
-                "availability": {
-                    "acs1": False,
-                    "subject": True
-                }
-            },
-            {
-                "id": "C17016_001E",
-                "desc": "Total Household",
-                "availability": {
-                    "acs1": True,
-                    "subject": False
-                }
-            },
-            {
-                "id": "C17016_002E",
-                "desc": "Household Below poverty level",
-                "availability": {
-                    "acs1": True,
-                    "subject": False
                 }
             }
         ]
