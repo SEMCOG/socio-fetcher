@@ -89,7 +89,7 @@ class Downloader:
             for fips, geoDf in res.items():
                 self.data[fips][dataset] = geoDf
 
-    def export(self, path, summarize=False, by="geography", saveformat="csv", orient="index"):
+    def export(self, path, summarize=False, by="geography", saveformat="csv", orient="index", suffix=""):
         """
         Save downloaded data to specified path
 
@@ -106,6 +106,8 @@ class Downloader:
         orient:str
             Only apply to json export, define orient for json export
             visit https://pandas.pydata.org/pandas-docs/version/0.24.2/reference/api/pandas.DataFrame.to_json.html
+        surffix:str
+            Surffix after default name, used for differentiate versions of data
 
         Returns
         ----------
@@ -121,11 +123,13 @@ class Downloader:
                     os.makedirs(savePath, exist_ok=True)
                     if saveformat.lower() == "csv":
                         geoDf.DataFrame.to_csv(
-                            os.path.join(savePath, f"{datasetName}.csv")
+                            os.path.join(
+                                savePath, f"{datasetName}{suffix.strip()}.csv")
                         )
                     else:
                         geoDf.DataFrame.to_json(
-                            os.path.join(savePath, f"{datasetName}.json"),
+                            os.path.join(
+                                savePath, f"{datasetName}{suffix.strip()}.json"),
                             orient=orient
                         )
         else:
@@ -135,22 +139,26 @@ class Downloader:
                     areaName = self.config.Global.FIPS_CODE[areaID]
                     if saveformat.lower() == "csv":
                         Df.to_csv(
-                            os.path.join(path, f"{areaName}.csv")
+                            os.path.join(
+                                path, f"{areaName}{suffix.strip()}.csv")
                         )
                     else:
                         Df.to_json(
-                            os.path.join(path, f"{areaName}.json"),
+                            os.path.join(
+                                path, f"{areaName}{suffix.strip()}.json"),
                             orient=orient
                         )
             elif by.lower() == "dataset":
                 for datasetName, Df in summary.items():
                     if saveformat.lower() == "csv":
                         Df.to_csv(
-                            os.path.join(path, f"{datasetName}.csv")
+                            os.path.join(
+                                path, f"{datasetName}{suffix.strip()}.csv")
                         )
                     else:
                         Df.to_json(
-                            os.path.join(path, f"{datasetName}.json"),
+                            os.path.join(
+                                path, f"{datasetName}{suffix.strip()}.json"),
                             orient=orient
                         )
 
@@ -498,13 +506,17 @@ class Downloader:
         s.params = {
             "key": self.config.ACS.API_KEY
         }
+        startyear = None
         for payload in tqdm(ACSPayload, desc="Download ACS Table"):
             for field in payload[-1]:
                 fieldID = field["id"]
                 year = payload[0]
-                data = field["data"]
+                data = field["data"].lower()
                 subcategory = field["availability"]["subcategory"]
                 subject = "subject" if field["availability"]["subject"] else ""
+                # skip unavialable year for pep
+                # if data == "pep" and int(year) < 2015:
+                #     continue
                 requestpayload = {
                     "get": fieldID,
                     "for": "county:"+payload[1],
@@ -514,6 +526,13 @@ class Downloader:
                 r = s.get(
                     f"https://api.census.gov/data/{year}/{data}/{subcategory}/{subject}")
                 n_retry = 0
+                if r.status_code == 404:
+                    print(
+                        f"Requesting acs {year} {data} fail. Response: 404. Dataset unavailable.")
+                    continue
+                else:
+                    if startyear == None:
+                        startyear = year 
                 while r.status_code != requests.codes.ok and n_retry < 10:
                     print(f"Request fail when requesting {r.url}")
                     warnings.warn(
@@ -526,7 +545,7 @@ class Downloader:
                 json_data = r.json()
                 areaCode = payload[2]+payload[1]
                 geoClassDict[areaCode].load(
-                    json_data, source="ACS", year=year, endyear=self.config.ACS.YEAR[-1])
+                    json_data, source="ACS", year=year, startyear=startyear)
 
         # merge two dicts
         for key, _ in geoClassDict.items():
@@ -613,7 +632,46 @@ class Downloader:
 if __name__ == "__main__":
     myConfig = Config()
     myConfig.ACS.API_KEY = "a1b79f5105b689bd9c4ed357de83130393b6dec7"
-
+    myConfig.ACS.YEAR = ["2010", "2011", "2012",
+                         "2013", "2014", "2015", "2016", "2017", "2018"]
+    myConfig.ACS.FIELDS = [
+        # {
+        #     "data": "pep",
+        #     "id": "BIRTHS,DEATHS,RBIRTH,RDEATH,RNATURALINC,INTERNATIONALMIG,DOMESTICMIG",
+        #     "desc": "Population change components",
+        #     "availability": {
+        #         "subcategory": "components",
+        #         "subject": False
+        #     }
+        # },
+        # {
+        #     "data": "pep",
+        #     "id": "POP",
+        #     "desc": "Population change population",
+        #     "availability": {
+        #         "subcategory": "population",
+        #         "subject": False
+        #     }
+        # }
+        {
+        "data": "acs",
+        "id": "S0101_C01_001E",
+        "desc": "Total Population",
+        "availability": {
+            "subcategory": "acs1",
+            "subject": True
+        }
+    },
+    {
+        "data": "acs",
+        "id": "S0102_C01_034E",
+        "desc": "Less than high school graduate",
+        "availability": {
+            "subcategory": "acs5",
+            "subject": True
+        }
+    }
+    ]
     datasets = ["ACS"]
     fips = {"26093": "Livingston,MI"}
     dl = Downloader(datasets, list(fips.keys()), config=myConfig)

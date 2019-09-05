@@ -39,7 +39,7 @@ class GeoDataFrame:
         self.__repr__ = self.__str__
         return self.county
 
-    def load(self, data, source="BLS", year=None, endyear=None):
+    def load(self, data, source="BLS", year=None, startyear=None):
         """
         Load dict data response from API, and update 
         countyData
@@ -83,7 +83,7 @@ class GeoDataFrame:
             elif year == self._tempDataFrame.index[0]:
                 self._tempDataFrame = pd.concat([self._tempDataFrame, parsedData],
                                                 axis=1, sort=True)
-                if len(self._tempDataFrame.columns) == len(self.DataFrame.columns) and year == endyear:
+                if len(self._tempDataFrame.columns) == len(self.DataFrame.columns) and year != startyear:
                     self.DataFrame = pd.concat([self.DataFrame, self._tempDataFrame],
                                                axis=0)
             elif year is not self._tempDataFrame.index[0]:
@@ -93,8 +93,13 @@ class GeoDataFrame:
                     self.DataFrame = pd.concat([self.DataFrame, self._tempDataFrame],
                                                axis=0)
                 self._tempDataFrame = parsedData
+                if len(self._tempDataFrame.columns) == len(self.DataFrame.columns) and year != startyear:
+                    self.DataFrame = pd.concat([self.DataFrame, self._tempDataFrame],
+                                               axis=0)
             else:
                 print("exception happens when concating ACS data")
+            if self.DataFrame.shape[0] > 1:
+                self.DataFrame = self.DataFrame.drop_duplicates()
 
     def BLSParser(self, data):
         """
