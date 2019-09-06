@@ -28,6 +28,7 @@ Expected use
 
 Todo
 --------------
+- Rewrite pep downloader: https://api.census.gov/data/2018/pep/components?key=a1b79f5105b689bd9c4ed357de83130393b6dec7&get=BIRTHS,PERIOD_DESC&for=county:125&in=state:26&PERIOD_CODE=9
 - Update testing for geodataframe 
 
 Log

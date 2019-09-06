@@ -506,7 +506,6 @@ class Downloader:
         s.params = {
             "key": self.config.ACS.API_KEY
         }
-        startyear = None
         for payload in tqdm(ACSPayload, desc="Download ACS Table"):
             for field in payload[-1]:
                 fieldID = field["id"]
@@ -514,9 +513,6 @@ class Downloader:
                 data = field["data"].lower()
                 subcategory = field["availability"]["subcategory"]
                 subject = "subject" if field["availability"]["subject"] else ""
-                # skip unavialable year for pep
-                # if data == "pep" and int(year) < 2015:
-                #     continue
                 requestpayload = {
                     "get": fieldID,
                     "for": "county:"+payload[1],
@@ -530,9 +526,6 @@ class Downloader:
                     print(
                         f"Requesting acs {year} {data} fail. Response: 404. Dataset unavailable.")
                     continue
-                else:
-                    if startyear == None:
-                        startyear = year 
                 while r.status_code != requests.codes.ok and n_retry < 10:
                     print(f"Request fail when requesting {r.url}")
                     warnings.warn(
@@ -545,7 +538,7 @@ class Downloader:
                 json_data = r.json()
                 areaCode = payload[2]+payload[1]
                 geoClassDict[areaCode].load(
-                    json_data, source="ACS", year=year, startyear=startyear)
+                    json_data, source="ACS", year=year)
 
         # merge two dicts
         for key, _ in geoClassDict.items():
