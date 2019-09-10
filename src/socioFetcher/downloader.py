@@ -540,7 +540,6 @@ class Downloader:
                 geoClassDict[areaCode].load(
                     json_data, source="ACS", year=year)
 
-        # merge two dicts
         for key, _ in geoClassDict.items():
             if "state" in geoClassDict[key].DataFrame.columns:
                 del geoClassDict[key].DataFrame["state"]

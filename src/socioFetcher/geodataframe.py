@@ -34,6 +34,7 @@ class GeoDataFrame:
         #self.loadedBLSSeriesID = []
         self.DataFrame = pd.DataFrame()
         self._tempDataFrame = pd.DataFrame()
+        self._lastLoadedYear = None
 
     def __str__(self):
         self.__repr__ = self.__str__
@@ -79,10 +80,8 @@ class GeoDataFrame:
         elif source.upper() == "ACS" and self.dataset == "ACS":
             parsedData = self.ACSParser(data, year=year)
             # if temp dataframe is empty, assign parsed to temp df
-            if self._tempDataFrame.shape[0] == 0:
-                self._tempDataFrame = parsedData
-            # else if same year data comming, appending to current temp df
-            elif year == self._tempDataFrame.index[0]:
+            if year in self._tempDataFrame.index or self._lastLoadedYear == None:
+
                 self._tempDataFrame = pd.concat([self._tempDataFrame, parsedData],
                                                 axis=1, sort=True)
                 # if reach the end then merge temp and master
@@ -90,14 +89,26 @@ class GeoDataFrame:
                     self.DataFrame = pd.concat([self.DataFrame, self._tempDataFrame],
                                                axis=0)
                     self._tempDataFrame = pd.DataFrame()
+                self._lastLoadedYear = year
 
             # else if new year data comming, append temp df to master df, and
             # assign new year data to temp df
-            elif year is not self._tempDataFrame.index[0] and self.DataFrame.shape[0] == 0:
-                self.DataFrame = self._tempDataFrame
-                self._tempDataFrame = parsedData
-            else:
-                print("exception happens when concating ACS data")
+            else:  # year not in self._tempDataFrame.index
+                # If master df is empty, assign temp to master and assign
+                # parsedData to temp
+                if self.DataFrame.shape[0] == 0:
+                    self.DataFrame = self._tempDataFrame
+                    self._tempDataFrame = parsedData
+                # else merge temp and master
+                else:
+                    self.DataFrame = pd.concat([self.DataFrame, self._tempDataFrame],
+                                               axis=0)
+                    self._tempDataFrame = parsedData
+                if len(parsedData.columns) == len(self.DataFrame.columns):
+                    self.DataFrame = pd.concat([self.DataFrame, parsedData],
+                                               axis=0)
+                    self._tempDataFrame = pd.DataFrame()
+                #self.DataFrame = self.DataFrame.drop_duplicates()
 
     def BLSParser(self, data):
         """
@@ -152,7 +163,7 @@ class GeoDataFrame:
         Parameters
         -----------
         data:dict
-            BLS JSON data
+            ACS JSON data
         year:str
             Year of the ACS data
 
