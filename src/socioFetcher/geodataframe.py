@@ -149,7 +149,7 @@ class GeoDataFrame:
         ----------
         pandas.Series
         """
-        colName = "avgIncome" if not gdp else "GDP"
+        colName = data["Statistic"]
         d = pd.DataFrame(columns=[colName], dtype="float64")
         for dd in data["Data"]:
             d.loc[dd["TimePeriod"], colName] = float(

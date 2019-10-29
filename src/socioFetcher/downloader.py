@@ -523,6 +523,7 @@ class Downloader:
                     f"https://api.census.gov/data/{year}/{data}/{subcategory}/{subject}")
                 n_retry = 0
                 if r.status_code == 404:
+                    
                     print(
                         f"Requesting acs {year} {data} fail. Response: 404. Dataset unavailable.")
                     continue
@@ -627,24 +628,6 @@ if __name__ == "__main__":
     myConfig.ACS.YEAR = ["2010", "2011", "2012",
                          "2013", "2014", "2015", "2016", "2017", "2018"]
     myConfig.ACS.FIELDS = [
-        # {
-        #     "data": "pep",
-        #     "id": "BIRTHS,DEATHS,RBIRTH,RDEATH,RNATURALINC,INTERNATIONALMIG,DOMESTICMIG",
-        #     "desc": "Population change components",
-        #     "availability": {
-        #         "subcategory": "components",
-        #         "subject": False
-        #     }
-        # },
-        # {
-        #     "data": "pep",
-        #     "id": "POP",
-        #     "desc": "Population change population",
-        #     "availability": {
-        #         "subcategory": "population",
-        #         "subject": False
-        #     }
-        # }
         {
         "data": "acs",
         "id": "S0101_C01_001E",

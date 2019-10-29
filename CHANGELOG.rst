@@ -33,6 +33,7 @@ Todo
 
 Log
 --------------
+- 10/29 Fix BEA column name bug where same column name exist
 - 09/04 Reformat ACS Config to include options to choose dataset
 - 09/03 Reformat ACS Config and refactor ACS downloader
 - 08/05 
