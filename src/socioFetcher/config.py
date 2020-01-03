@@ -137,11 +137,8 @@ class BEA:
         self.TABLE_NAME = ["CAINC1"]
         self.YEAR = ["ALL"]              # All year
 
-        self.GDP_METRO_CODE = {"11460": "Ann Arbor Metro",
-                               "19820": "Detroit Metro",
-                               "33780": "Monroe Metro"}
-        self.GDP_COMPONENT = ["RGDP_MAN"]  # Real GDP by metro
-        self.GDP_INDUSTRY = ["1"]        # total
+        self.GDP_TABLE_NAME = ["CAGDP2"]  # Real GDP by metro
+        self.GDP_LINE_CODE = ["1"]        # total
         self.GDP_YEAR = ["ALL"]          # all year
 
 

@@ -456,13 +456,13 @@ class Downloader:
         s.params = {
             "UserID": self.config.BEA.API_KEY,
             "Method": "GetData",
-            "datasetname": "REGIONALPRODUCT"
+            "datasetname": "REGIONAL"
         }
         for BEApaylaod in tqdm(beaPayloadList, desc="Download GDP from BEA"):
             payload = {
                 "GeoFips": BEApaylaod[0],
-                "component": BEApaylaod[1],
-                "IndustryId": BEApaylaod[2],
+                "TableName": BEApaylaod[1],
+                "LineCode": BEApaylaod[2],
                 "Year": BEApaylaod[3]
             }
             s.params.update(payload)
@@ -600,8 +600,8 @@ class Downloader:
         """
         BEApayloadList = []
         for payload in itertools.product(self.fipsList,
-                                         self.config.BEA.GDP_COMPONENT,
-                                         self.config.BEA.GDP_INDUSTRY,
+                                         self.config.BEA.GDP_TABLE_NAME,
+                                         self.config.BEA.GDP_LINE_CODE,
                                          self.config.BEA.GDP_YEAR):
             BEApayloadList.append(payload)
         return BEApayloadList

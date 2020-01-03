@@ -152,8 +152,12 @@ class GeoDataFrame:
         colName = data["Statistic"]
         d = pd.DataFrame(columns=[colName], dtype="float64")
         for dd in data["Data"]:
-            d.loc[dd["TimePeriod"], colName] = float(
-                dd["DataValue"].replace(",", ""))
+            # if surpressed, default to -1
+            try:
+                d.loc[dd["TimePeriod"], colName] = float(
+                    dd["DataValue"].replace(",", ""))
+            except ValueError:
+                d.loc[dd["TimePeriod"], colName] = -1.0
         return d
 
     def ACSParser(self, data, year=None):
