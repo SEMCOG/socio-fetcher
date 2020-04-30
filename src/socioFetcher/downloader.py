@@ -354,14 +354,15 @@ class Downloader:
         # Initialize session and default data
         s = requests.Session()
         s.headers = {'Content-type': 'application/json'}
-        p = re.compile(r"[A-Z]+\d{5}")
+        fipsLength = len(self.fipsList[0])
+        p = re.compile(r"[A-Z]+\d{"+ str(fipsLength) +"}")
         for srsList in tqdm(seriesListChunk, desc="Download BLS data"):
             data = json.dumps({"seriesid": srsList,
                                "startyear": self.config.BLS.START_YEAR,
                                "endyear": self.config.BLS.END_YEAR,
                                "registrationkey": self.config.BLS.API_KEY,
                                "calculations": "true",
-                               "annualaverage": "true"})
+                               "annualaverage": self.config.BLS.ANNUAL_AVERAGE})
             r = s.post(
                 'https://api.bls.gov/publicAPI/v2/timeseries/data/',
                 data=data)
@@ -378,8 +379,8 @@ class Downloader:
             json_data = r.json()
             for seriesResult in json_data["Results"]["series"]:
                 m = p.match(seriesResult["seriesID"])
-                areaCode = m.group()[-5:]
-                geoClassDict[areaCode].load(seriesResult)
+                areaCode = m.group()[-fipsLength:]
+                geoClassDict[areaCode].load(seriesResult, fips=areaCode)
                 # geoClassDict[areaCode].DataFrame = geoClassDict[areaCode].DataFrame.rename(
                 #     self.config.BLS.MEASURE_CODE, axis=1)
         return geoClassDict
@@ -554,29 +555,42 @@ class Downloader:
         Helper function to Generate Series List form given parameter list
         """
         seriesList = []
-        # State and County Employment and Wages(Quarterly Census of Employment & Wages - QCEW)
-        if "ENU" in self.config.BLS.TABLE_NUMBER:
-            for sridTup in itertools.product(self.fipsList,
-                                             self.config.BLS.DATA_TYPE,
-                                             self.config.BLS.SIZE,
-                                             self.config.BLS.OWNERSHIP,
-                                             self.config.BLS.NAICS_CODE_LIST.keys()):
+        # QCEW - State and County Employment and Wages(Quarterly Census of Employment & Wages)
+        if "EN" in self.config.BLS.TABLE_NUMBER:
+            for sridTup in itertools.product(self.config.BLS.EN_SEASONAL_ADJUST_CODE,
+                                             self.fipsList,
+                                             self.config.BLS.EN_DATA_TYPE,
+                                             self.config.BLS.EN_SIZE,
+                                             self.config.BLS.EN_OWNERSHIP,
+                                             self.config.BLS.EN_NAICS_CODE_LIST.keys()):
                 sridList = list(sridTup)
                 if sridList[-1] == "10":
                     # if is Total, change ownership to all
                     sridList[-2] = "0"
-                srid = "ENU"
+                srid = "EN"
                 for item in sridList:
                     srid += item
                 seriesList.append(srid)
+        # LAUS - Unemployment Data
         if "LA" in self.config.BLS.TABLE_NUMBER:
-            for sridTup in itertools.product(self.config.BLS.SEASONAL_ADJUST_CODE,
+            for sridTup in itertools.product(self.config.BLS.LA_SEASONAL_ADJUST_CODE,
                                              self.fipsList,
-                                             self.config.BLS.MEASURE_CODE.keys()):
+                                             self.config.BLS.LA_MEASURE_CODE.keys()):
                 sridList = list(sridTup)
                 # Convert fipscode to area code
                 sridList[1] = f"CN{sridList[1]}00000000"
                 srid = "LA"
+                for item in sridList:
+                    srid += item
+                seriesList.append(srid)
+        # CES - Current Employment Statistics 
+        if "SM" in self.config.BLS.TABLE_NUMBER:
+            for sridTup in itertools.product(self.config.BLS.SM_SEASONAL_ADJUST_CODE,
+                                             self.fipsList,
+                                             self.config.BLS.SM_INDUSTRY_CODE_LIST.keys(),
+                                             self.config.BLS.SM_DATA_TYPE.keys()):
+                sridList = list(sridTup)
+                srid = "SM" # dataset code
                 for item in sridList:
                     srid += item
                 seriesList.append(srid)

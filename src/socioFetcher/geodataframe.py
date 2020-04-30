@@ -40,7 +40,7 @@ class GeoDataFrame:
         self.__repr__ = self.__str__
         return self.county
 
-    def load(self, data, source="BLS", year=None):
+    def load(self, data, source="BLS", year=None, fips=None):
         """
         Load dict data response from API, and update 
         countyData
@@ -61,7 +61,7 @@ class GeoDataFrame:
         """
         if source.upper() == "BLS" and self.dataset == "BLS":
             # self.loadedBLSSeriesID.append(data["seriesID"])
-            parsedData = self.BLSParser(data)
+            parsedData = self.BLSParser(data, fips)
             self.DataFrame = pd.concat([self.DataFrame, parsedData],
                                        axis=1, sort=True)
             self.DataFrame = self.DataFrame.fillna(method='ffill')
@@ -110,7 +110,7 @@ class GeoDataFrame:
                     self._tempDataFrame = pd.DataFrame()
                 #self.DataFrame = self.DataFrame.drop_duplicates()
 
-    def BLSParser(self, data):
+    def BLSParser(self, data, fips):
         """
         Generate Pandas Series from given JSON data, dict, from BLS
 
@@ -123,15 +123,20 @@ class GeoDataFrame:
         ------------
         pandas.Series
         """
-        attrName = data["seriesID"][-2:] if data["seriesID"][11] == "0" else data["seriesID"][11:]
+        # keep the right side of the seiresID after the geoid
+        attrName = data["seriesID"].split(str(fips))[-1] # [-2:] if data["seriesID"][11] == "0" else data["seriesID"][11:]
         d = pd.Series(name=attrName)
         for dd in data['data']:
             if dd["period"] == "M13":
-                try:
-                    d[dd["year"]] = float(dd["value"].replace(",", ""))
-                except:
-                    Warning(f"Unable to parse {dd['value']} in {dd['year']}")
-                    d[dd["year"]] = 0
+                date = dd["year"]
+            else: 
+                date = dd["year"] + "-" + dd["period"][1:]
+                
+            try:
+                d[date] = float(dd["value"].replace(",", ""))
+            except:
+                Warning(f"Unable to parse {dd['value']} in {dd['year']}")
+                d[date] = 0
         return d
 
     def BEAParser(self, data, gdp=False):

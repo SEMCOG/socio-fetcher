@@ -26,9 +26,9 @@ class Global:
                           "26147": "St. Clair,MI",
                           "26161": "Washtenaw,MI",
                           "26163": "Wayne,MI",
-                          "11460": "Ann Arbor Metro",
-                          "19820": "Detroit Metro",
-                          "33780": "Monroe Metro"}
+                          "2611460": "Ann Arbor Metro",
+                          "2619820": "Detroit Metro",
+                          "2633780": "Monroe Metro"}
 
 
 class BLS:
@@ -61,15 +61,25 @@ class BLS:
 
     def __init__(self):
         self.API_KEY = None
+        # Table number list: https://download.bls.gov/pub/time.series/
+        # e.g. ["EN", "LA"]
+        self.TABLE_NUMBER = []  
+        # Start and End year of query, eariest year is 2001
+        self.START_YEAR = "2001"
+        self.END_YEAR = "2020"
+        # Get annual average, used in the request parameter
+        self.ANNUAL_AVERAGE = "false"
 
         # BLS Series ID List, https://data.bls.gov/, each
         # represent a county.
 
-        self.TABLE_NUMBER = ["ENU"]  # QCEW Data
-        self.DATA_TYPE = ["1"]  # All Employees
-        self.SIZE = ["0"]       # All size
-        self.OWNERSHIP = ["5"]  # Private
-        self.NAICS_CODE_LIST = {
+        # EN: QCEW - State and County Employment and Wages(Quarterly Census of Employment & Wages)
+        # "U" unadjusted, "S" Seasonal adjusted
+        self.EN_SEASONAL_ADJUST_CODE = ["U"]
+        self.EN_DATA_TYPE = ["1"]  # All Employees
+        self.EN_SIZE = ["0"]       # All size
+        self.EN_OWNERSHIP = ["5"]  # Private
+        self.EN_NAICS_CODE_LIST = {
             "10":	"10 Total, all industries",
             "101":	"101 Goods-producing",
             "1011"	: "1011 Natural resources and mining",
@@ -85,20 +95,25 @@ class BLS:
             "1027"	: "1027 Other services",
             "1029"	: "1029 Unclassified"
         }
-        # Local Area Unemployment Statistics
+
+        # LA: LAUS - Local Area Unemployment Statistics
         # "U" unadjusted, "S" Seasonal adjusted
-        self.SEASONAL_ADJUST_CODE = ["U"]
+        self.LA_SEASONAL_ADJUST_CODE = ["U"]
         # Area code list https://download.bls.gov/pub/time.series/la/la.area
         # Masure code https://download.bls.gov/pub/time.series/la/la.measure
-        self.MEASURE_CODE = {
+        self.LA_MEASURE_CODE = {
             "03":	"unemployment rate",
             "04":	"unemployment",
             "05":	"employment",
             "06":	"labor force"
         }
-        # Start and End year of query, eariest year is 2001
-        self.START_YEAR = "2001"
-        self.END_YEAR = "2018"
+
+        # SM: CES - Current Employment Statistics 
+        self.SM_SEASONAL_ADJUST_CODE = ["U"]
+        # Industry code list: https://download.bls.gov/pub/time.series/sm/sm.industry
+        self.SM_INDUSTRY_CODE_LIST = {}
+        # DATA TYPE: https://download.bls.gov/pub/time.series/sm/sm.data_type
+        self.SM_DATA_TYPE = {}
 
 
 class BEA:
