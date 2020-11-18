@@ -374,7 +374,7 @@ class Downloader:
                 time.sleep(10)
                 r = s.post(
                     'https://api.bls.gov/publicAPI/v2/timeseries/data/',
-                    data=data, headers=headers)
+                    data=data)
                 n_retry += 1
             json_data = r.json()
             for seriesResult in json_data["Results"]["series"]:
@@ -420,6 +420,8 @@ class Downloader:
             }
             s.params.update(payload)
             r = s.get("https://apps.bea.gov/api/data/")
+            # sleep .6 second
+            time.sleep(0.6)
             n_retry = 0
             while r.status_code != requests.codes.ok and n_retry < 10:
                 warnings.warn(
@@ -468,6 +470,8 @@ class Downloader:
             }
             s.params.update(payload)
             r = s.get("https://apps.bea.gov/api/data/")
+            # sleep .6 second
+            time.sleep(0.6)
             n_retry = 0
             while r.status_code != requests.codes.ok and n_retry < 10:
                 print(f"Request fail when requesting {r.url}")
