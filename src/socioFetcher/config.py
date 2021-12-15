@@ -18,7 +18,7 @@ class Global:
     """
 
     def __init__(self):
-        self.ALLOWED_DATASET = ["BLS", "BEA", "BEAGDP", "ACS"]
+        self.ALLOWED_DATASET = ["BLS", "BEA", "BEAGDP", "ACS", "ACS_BG"]
         self.FIPS_CODE = {"26093": "Livingston,MI",
                           "26099": "Macomb,MI",
                           "26115": "Monroe,MI",

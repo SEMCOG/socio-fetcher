@@ -183,3 +183,22 @@ class GeoDataFrame:
         d = pd.DataFrame(data[1:], columns=data[0], dtype='float')
         d.index = [year]
         return d
+
+    def ACSBGParser( data, year=None):
+        """
+        Generate Pandas Series from given JSON data, dict, from ACS BG
+
+        Parameters
+        -----------
+        data:dict
+            ACS JSON data
+        year:str
+            Year of the ACS data
+
+        Output
+        ------------
+            pandas.Series
+        """
+        d = pd.DataFrame(data[1:], columns=data[0], dtype='int')
+        d = d.set_index(['state', 'county', 'tract', 'block group'])
+        return d

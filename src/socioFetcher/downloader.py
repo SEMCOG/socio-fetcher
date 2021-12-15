@@ -86,8 +86,12 @@ class Downloader:
                 res = self.downloadBEAGDP()
             elif dataset.upper() == "ACS":
                 res = self.downloadACS()
-            for fips, geoDf in res.items():
-                self.data[fips][dataset] = geoDf
+            elif dataset.upper() == "ACS_BG":
+                res = self.downloadACSBG()
+                self.data = res
+                continue
+            for key, geoDf in res.items():
+                self.data[key][dataset] = geoDf
 
     def export(self, path, summarize=False, by="geography", saveformat="csv", orient="index", suffix=""):
         """
@@ -115,6 +119,15 @@ class Downloader:
         """
         if not os.path.exists(path):
             os.mkdir(path)
+        if by.lower() == "block group":
+            for year, df in self.data.items():
+                if saveformat.lower() == "csv":
+                    df.to_csv(
+                        os.path.join(
+                            path, f"ACS5_{year}.csv")
+                    )
+            return
+            
         if not summarize:
             for areaID, obj in self.data.items():
                 areaName = self.config.Global.FIPS_CODE[areaID]
@@ -554,6 +567,68 @@ class Downloader:
 
         return geoClassDict
 
+    def downloadACSBG(self):
+        """
+        Download ACS BG data given configuration from constructor.
+
+        Parameters
+        ----------
+            None
+
+        Returns
+        -----------
+        geoClassDict:dict
+            key: FIPS:str,
+            value: socioFetcher.GeoDataFrame
+        """
+        geoClassDict = {}
+        for year in self.config.ACS.YEAR:
+            geoClassDict[year] = pd.DataFrame(columns=['state', 'county', 'tract', 'block group'])
+            geoClassDict[year] = geoClassDict[year].set_index(['state', 'county', 'tract', 'block group'])
+        ACSPayload = self._getACSPayload()
+        # Initialize session and default data
+        s = requests.Session()
+        s.params = {
+            "key": self.config.ACS.API_KEY
+        }
+        for payload in tqdm(ACSPayload, desc="Download ACS BG Table"):
+            local_df = pd.DataFrame(columns=['state', 'county', 'tract', 'block group'])
+            local_df = local_df.set_index(['state', 'county', 'tract', 'block group'])
+            for field in payload[-1]:
+                fieldID = field["id"]
+                year = payload[0]
+                data = field["data"].lower()
+                subcategory = field["availability"]["subcategory"]
+                subject = "subject" if field["availability"]["subject"] else ""
+                requestpayload = {
+                    "get": fieldID,
+                    "for": "block group",
+                    "in": "state:"+payload[2] + "&in=county:" + payload[1]
+                }
+                s.params.update(requestpayload)
+                r = s.get(
+                    f"https://api.census.gov/data/{year}/{data}/{subcategory}/{subject}")
+                n_retry = 0
+                if r.status_code == 404:
+                    print(
+                        f"Requesting acs {year} {data} fail. Response: 404. Dataset unavailable.")
+                    continue
+                while r.status_code != requests.codes.ok and n_retry < 10:
+                    print(f"Request fail when requesting {r.url}")
+                    warnings.warn(
+                        f"Request server fail with error code ${str(r.status_code)}, sleep 10 sec",
+                        ResourceWarning)
+                    time.sleep(10)
+                    r = s.get(
+                        f"https://api.census.gov/data/{year}/{data}/{subcategory}/{subject}")
+                    n_retry += 1
+                json_data = r.json()
+                parsedData = GeoDataFrame.ACSBGParser(json_data, year=year)
+				# merge local results
+                local_df = pd.concat([ local_df, parsedData], join='outer', axis=1)
+            geoClassDict[year] = pd.concat([geoClassDict[year], local_df], join='outer', axis=0)
+        return geoClassDict
+
     def _getBLSSeriesList(self):
         """
         Helper function to Generate Series List form given parameter list
@@ -643,29 +718,29 @@ class Downloader:
 if __name__ == "__main__":
     myConfig = Config()
     myConfig.ACS.API_KEY = "a1b79f5105b689bd9c4ed357de83130393b6dec7"
-    myConfig.ACS.YEAR = ["2010", "2011", "2012",
-                         "2013", "2014", "2015", "2016", "2017", "2018"]
+    myConfig.ACS.YEAR = [ "2017", "2018"]
     myConfig.ACS.FIELDS = [
-        {
+    {
         "data": "acs",
-        "id": "S0101_C01_001E",
-        "desc": "Total Population",
+        "id": "B25002_002E",
+        "desc": "Total Occupied Household",
         "availability": {
-            "subcategory": "acs1",
-            "subject": True
+            "subcategory": "acs5",
+            "subject": False
         }
     },
     {
         "data": "acs",
-        "id": "S0102_C01_034E",
-        "desc": "Less than high school graduate",
+        "id": "B25001_001E",
+        "desc": "Housing Unit",
         "availability": {
             "subcategory": "acs5",
-            "subject": True
+            "subject": False
         }
-    }
+    },
     ]
-    datasets = ["ACS"]
+    datasets = ["ACS_BG"]
     fips = {"26093": "Livingston,MI"}
     dl = Downloader(datasets, list(fips.keys()), config=myConfig)
     dl.download()
+    dl.export("data/", saveformat="csv", by="block group")
