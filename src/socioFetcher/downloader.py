@@ -9,7 +9,6 @@ import time
 import re
 from socioFetcher.config import Config
 from socioFetcher.geodataframe import GeoDataFrame
-from socioFetcher.mapview import MapView
 
 
 class Downloader:
@@ -215,67 +214,6 @@ class Downloader:
                                              axis=1, sort=True)
                 datasetTableDict[datasetName] = datasetTable
             return datasetTableDict
-
-    def mapping(self, dataset=None):
-        """
-        Mapping the selected downloaded data in form of Interactive map
-        Parameters
-        -----------
-        dataset:str 
-            The name of dataset to be mapped
-
-        Returns
-        -----------
-        mapView:SocioFetcher.MapView
-        """
-        geodata = self.get_geojson_from_TIGER(
-            self.fipsList, outFields=["GEOID"], geo="county")
-        choro_data = self.get_choro_data(dataset)
-        mapView = MapView(
-            dataset,
-            geodata,
-            choro_data,
-            {idx: self.config.Global.FIPS_CODE[idx] for idx in self.fipsList}
-        )
-        return mapView
-
-    def get_choro_data(self, dataset):
-        """
-        Generate choropleth data for mapping use in MapView
-
-        Parameters
-        ----------
-        dataset:str
-            The name of the dataset to be ploted in choropleth map
-
-        Returns
-        ----------
-        choro_data:dict {attributeName=>{year=>{areaID=>value}}}
-        """
-        # self.data => choro_data for given dataset
-        choro_data = {}
-        for areaID, areaDict in tqdm(self.data.items(), desc="Getting Choro data"):
-            areaDatasetDict = areaDict[dataset].DataFrame.to_dict(
-                orient="dict")
-            for attrID, attrdict in areaDatasetDict.items():
-                if dataset.upper() == 'BLS':
-                    blsAttrLookUp = {
-                        **self.config.BLS.NAICS_CODE_LIST, **self.config.BLS.MEASURE_CODE}
-                    attrName = blsAttrLookUp[attrID]
-                elif dataset.upper() == 'ACS':
-                    if attrID in self.config.ACS.SUBJECT_LIST.keys():
-                        attrName = self.config.ACS.SUBJECT_LIST[attrID]
-                    else:
-                        attrName = self.config.ACS.DETAIL_LIST[attrID]
-                else:
-                    attrName = attrID
-                if not attrName in choro_data.keys():
-                    choro_data[attrName] = {}
-                for year, data in attrdict.items():
-                    if not year in choro_data[attrName].keys():
-                        choro_data[attrName][year] = {}
-                    choro_data[attrName][year][areaID] = data
-        return choro_data
 
     def get_geojson_from_TIGER(self, fipsList, outFields=["GEOID"], geo="county"):
         """

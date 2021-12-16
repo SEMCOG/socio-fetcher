@@ -18,8 +18,8 @@ setup(
         'pytest>=5.0.1',
         "pandas>=0.23.4",
         "tqdm>=4.32.0",
-        "ipyleaflet>=0.11.0"
-        "ipywidgets>=7.5.0",
+        # "ipyleaflet>=0.11.0"
+        # "ipywidgets>=7.5.0",
         "sphinx>=2.1.2"
     ],
     tests_require=['pytest'],
