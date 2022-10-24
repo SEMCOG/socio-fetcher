@@ -468,7 +468,7 @@ class Downloader:
                 year = payload[0]
                 data = field["data"].lower()
                 subcategory = field["availability"]["subcategory"]
-                subject = "subject" if field["availability"]["subject"] else ""
+                subject = "/subject" if field["availability"]["subject"] else ""
                 requestpayload = {
                     "get": fieldID,
                     "for": "county:"+payload[1],
@@ -476,10 +476,10 @@ class Downloader:
                 }
                 s.params.update(requestpayload)
                 r = s.get(
-                    f"https://api.census.gov/data/{year}/{data}/{subcategory}/{subject}")
+                    f"https://api.census.gov/data/{year}/{data}/{subcategory}{subject}")
                 n_retry = 0
                 if r.status_code == 404:
-                    
+                    print(r.url)
                     print(
                         f"Requesting acs {year} {data} fail. Response: 404. Dataset unavailable.")
                     continue
